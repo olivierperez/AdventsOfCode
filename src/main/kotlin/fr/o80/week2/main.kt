@@ -21,4 +21,5 @@ class MainObject(module: InjectModule) {
     override fun toString(): String {
         return "Factory => One: $factoryOne, Two: $factoryTwo\nSingleton => One: $singletonOne, Two: $singletonTwo"
     }
+
 }
