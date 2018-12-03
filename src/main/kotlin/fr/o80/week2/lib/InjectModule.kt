@@ -1,4 +1,4 @@
-package fr.o80.week2
+package fr.o80.week2.lib
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty

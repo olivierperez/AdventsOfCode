@@ -1,4 +1,9 @@
-package fr.o80.week2
+package fr.o80.week2.example
+
+import fr.o80.week2.lib.InjectModule
+import fr.o80.week2.lib.factory
+import fr.o80.week2.lib.module
+import fr.o80.week2.lib.singleton
 
 fun main(args: Array<String>) {
     val module = module {
@@ -19,7 +24,15 @@ class MainObject(module: InjectModule) {
     private val singletonTwo: SingletonInjectable by module.inject()
 
     override fun toString(): String {
-        return "Factory => One: $factoryOne, Two: $factoryTwo\nSingleton => One: $singletonOne, Two: $singletonTwo"
+        return """
+Factory =>
+    One: $factoryOne
+    Two: $factoryTwo
+
+Singleton =>
+    One: $singletonOne
+    Two: $singletonTwo
+"""
     }
 
 }

@@ -1,4 +1,4 @@
-package fr.o80.week2
+package fr.o80.week2.lib
 
 @DslMarker
 annotation class Injection
