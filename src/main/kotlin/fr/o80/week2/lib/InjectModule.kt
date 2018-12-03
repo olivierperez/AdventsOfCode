@@ -36,7 +36,22 @@ class Prototype<T : Any>(private val block: () -> T) : Generator<T>() {
     fun invoke(): T = block()
 }
 
-class Singleton<T : Any>(private val block: () -> T) : Generator<T>() {
+class Singleton<T : Any>(private val key: String, private val block: () -> T) : Generator<T>() {
+
+    override fun get(): T {
+        val value = cached[key]
+        return when (value) {
+            null -> block().also { cached[key] = it }
+            else -> value as T
+        }
+    }
+
+    companion object {
+        private var cached: MutableMap<String, Any> = mutableMapOf()
+    }
+}
+
+class Scoped<T : Any>(private val block: () -> T) : Generator<T>() {
     private var cached: T? = null
 
     override fun get(): T {

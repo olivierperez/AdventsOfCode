@@ -1,16 +1,21 @@
 package fr.o80.week2.example
 
-import fr.o80.week2.lib.InjectModule
-import fr.o80.week2.lib.factory
-import fr.o80.week2.lib.module
-import fr.o80.week2.lib.singleton
+import fr.o80.week2.lib.*
 
 fun main(args: Array<String>) {
     val module = module {
         factory(::FactoryInjectable)
         singleton(::SingletonInjectable)
+        scoped(::ScopedInjectable)
     }
     println(MainObject(module).toString())
+
+    val module2 = module {
+        factory(::FactoryInjectable)
+        singleton(::SingletonInjectable)
+        scoped(::ScopedInjectable)
+    }
+    println(MainObject(module2).toString())
 }
 
 class MainObject(module: InjectModule) {
@@ -23,11 +28,19 @@ class MainObject(module: InjectModule) {
 
     private val singletonTwo: SingletonInjectable by module.inject()
 
+    private val scopedOne: ScopedInjectable = module.get()
+
+    private val scopedTwo: ScopedInjectable by module.inject()
+
     override fun toString(): String {
         return """
 Factory =>
     One: $factoryOne
     Two: $factoryTwo
+
+Scoped =>
+    One: $scopedOne
+    Two: $scopedTwo
 
 Singleton =>
     One: $singletonOne
