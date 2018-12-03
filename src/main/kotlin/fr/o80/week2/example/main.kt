@@ -3,20 +3,21 @@ package fr.o80.week2.example
 import fr.o80.week2.lib.*
 
 fun main(args: Array<String>) {
+
     val module = module {
-        factory(::FactoryInjectable)
-        singleton(::SingletonInjectable)
-        scoped(::ScopedInjectable)
-        factory { DependingInjectable(get(), get()) }
+        factory(::FactoryInjectable) // Will create a new instance for any injection
+        scoped(::ScopedInjectable) // Will create a single instance for all injections from this module
+        singleton(::SingletonInjectable) // Will create a single instance, no matter the module
+
+        factory { DependingInjectable(get(), get()) } // Example for injection in constructor
     }
     println(MainObject(module).toString())
-
     println("\n===================\n")
 
     val module2 = module {
         factory(::FactoryInjectable)
-        singleton(::SingletonInjectable)
         scoped(::ScopedInjectable)
+        singleton(::SingletonInjectable)
         factory { DependingInjectable(get(), get()) }
     }
     println(MainObject(module2).toString())
