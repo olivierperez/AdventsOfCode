@@ -7,15 +7,20 @@ fun main(args: Array<String>) {
         factory(::FactoryInjectable)
         singleton(::SingletonInjectable)
         scoped(::ScopedInjectable)
+        factory { DependingInjectable(get(), get()) }
     }
     println(MainObject(module).toString())
+
+    println("\n===================\n")
 
     val module2 = module {
         factory(::FactoryInjectable)
         singleton(::SingletonInjectable)
         scoped(::ScopedInjectable)
+        factory { DependingInjectable(get(), get()) }
     }
     println(MainObject(module2).toString())
+
 }
 
 class MainObject(module: InjectModule) {
@@ -32,9 +37,10 @@ class MainObject(module: InjectModule) {
 
     private val scopedTwo: ScopedInjectable by module.inject()
 
+    private val dependingInjectable: DependingInjectable by module.inject()
+
     override fun toString(): String {
-        return """
-Factory =>
+        return """Factory =>
     One: $factoryOne
     Two: $factoryTwo
 
@@ -45,7 +51,9 @@ Scoped =>
 Singleton =>
     One: $singletonOne
     Two: $singletonTwo
-"""
+
+Dependency =>
+    $dependingInjectable"""
     }
 
 }
