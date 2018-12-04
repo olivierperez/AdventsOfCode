@@ -7,6 +7,8 @@ class InjectModule {
 
     val generators: MutableMap<String, Generator<*>> = mutableMapOf()
 
+    val dependsOn: MutableSet<InjectModule> = mutableSetOf()
+
     inline fun <reified T : Any> inject(): ReadOnlyProperty<Any, T> = object : ReadOnlyProperty<Any, T> {
         override fun getValue(thisRef: Any, property: KProperty<*>): T = get()
     }
@@ -15,16 +17,23 @@ class InjectModule {
         val className = T::class.qualifiedName
                 ?: throw IllegalArgumentException("Cannot inject a non-real class")
 
+        return findByName<T>(className)
+                ?: dependsOn.firstOrNull { it.contains(className) }?.findByName(className)
+                ?: throw IllegalArgumentException("$className doesn't provide the right type")
+    }
+
+    inline fun <reified T : Any> findByName(className: String): T? {
         val provider = generators[className]
                 ?: throw IllegalArgumentException("$className is not declared as injectable")
 
-        val value = provider.get() as? T
-                ?: throw IllegalArgumentException("$className doesn't provide the right type")
-
-        return value
+        return provider.get() as? T
     }
 
+    fun contains(className: String): Boolean =
+            generators.containsKey(className)
+
 }
+
 
 abstract class Generator<T : Any> {
     abstract fun get(): T
