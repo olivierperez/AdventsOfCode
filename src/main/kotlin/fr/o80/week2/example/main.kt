@@ -15,12 +15,19 @@ fun main(args: Array<String>) {
     println("\n===================\n")
 
     val module2 = module {
+        dependsOn(module) // If module2 cannot provide a instance, it will ask it dependencies
+        factory(::SingletonInjectable) // For this example, we replace a Singleton by a Factory
+    }
+    println(MainObject(module2).toString())
+    println("\n===================\n")
+
+    val module3 = module {
         factory(::FactoryInjectable)
         scoped(::ScopedInjectable)
         singleton(::SingletonInjectable)
         factory { DependingInjectable(get(), get()) }
     }
-    println(MainObject(module2).toString())
+    println(MainObject(module3).toString())
 
 }
 

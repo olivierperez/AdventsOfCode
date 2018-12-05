@@ -26,3 +26,8 @@ inline fun <reified T : Any> InjectModule.scoped(noinline generator: () -> T) {
             ?: throw IllegalArgumentException("A non-real class cannot be injected")
     generators[className] = Scoped(generator)
 }
+
+@InjectionDsl
+inline fun InjectModule.dependsOn(vararg modules: InjectModule) {
+    dependsOn.addAll(modules)
+}

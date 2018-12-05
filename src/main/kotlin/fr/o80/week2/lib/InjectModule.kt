@@ -23,10 +23,7 @@ class InjectModule {
     }
 
     inline fun <reified T : Any> findByName(className: String): T? {
-        val provider = generators[className]
-                ?: throw IllegalArgumentException("$className is not declared as injectable")
-
-        return provider.get() as? T
+        return generators[className]?.get() as? T
     }
 
     fun contains(className: String): Boolean =
