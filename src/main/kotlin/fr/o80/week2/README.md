@@ -1,9 +1,9 @@
-# Examples
-
-## Library
+# Library
 
 - [Library](lib/InjectModule.kt)
 - [DSL](lib/injection.dsl.kt)
+
+# Examples
 
 ## Common
 
