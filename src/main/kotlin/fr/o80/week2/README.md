@@ -42,6 +42,22 @@ fun main() {
 }
 ```
 
+## Interface injection
+
+```kotlin
+interface Actionable
+
+class DoRightThing : Actionable
+
+fun main() {
+    val module = module {
+        factory<Actionable>(::DoRightThing) // Inject new instance of "DoRightThing" to be considered as an "Actionable"
+    }
+
+    // ...
+}
+```
+
 ## Module dependencies
 
 A module can depend on another module to work.
@@ -61,7 +77,7 @@ fun main() {
         factory(::SingletonInjectable) // For this example, we replace a Singleton by a Factory
     }
 
-    val o = MainObject(module)
+    val o = MainObject(module2)
 }
 ```
 

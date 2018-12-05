@@ -7,7 +7,7 @@ fun main(args: Array<String>) {
     val module = module {
         factory(::FactoryInjectable) // Will create a new instance for any injection
         scoped(::ScopedInjectable) // Will create a single instance for all injections from this module
-        singleton(::SingletonInjectable) // Will create a single instance, no matter the module
+        singleton<Singletonable>(::SingletonInjectable) // Will create a single instance, no matter the module
 
         factory { DependingInjectable(get(), get()) } // Example for injection in constructor
     }
@@ -16,7 +16,7 @@ fun main(args: Array<String>) {
 
     val module2 = module {
         dependsOn(module) // If module2 cannot provide a instance, it will ask it dependencies
-        factory(::SingletonInjectable) // For this example, we replace a Singleton by a Factory
+        factory<Singletonable>(::SingletonInjectable) // For this example, we replace a Singletonable by a Factory
     }
     println(MainObject(module2).toString())
     println("\n===================\n")
@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
     val module3 = module {
         factory(::FactoryInjectable)
         scoped(::ScopedInjectable)
-        singleton(::SingletonInjectable)
+        singleton<Singletonable>(::SingletonInjectable)
         factory { DependingInjectable(get(), get()) }
     }
     println(MainObject(module3).toString())
@@ -37,9 +37,9 @@ class MainObject(module: InjectModule) {
 
     private val factoryTwo: FactoryInjectable by module.inject()
 
-    private val singletonOne: SingletonInjectable = module.get()
+    private val singletonOne: Singletonable = module.get()
 
-    private val singletonTwo: SingletonInjectable by module.inject()
+    private val singletonTwo: Singletonable by module.inject()
 
     private val scopedOne: ScopedInjectable = module.get()
 
@@ -56,7 +56,7 @@ Scoped =>
     One: $scopedOne
     Two: $scopedTwo
 
-Singleton =>
+Singletonable =>
     One: $singletonOne
     Two: $singletonTwo
 

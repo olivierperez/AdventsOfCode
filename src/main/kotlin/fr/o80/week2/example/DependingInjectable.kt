@@ -2,7 +2,7 @@ package fr.o80.week2.example
 
 class DependingInjectable(
         private val scopedInjectable: ScopedInjectable,
-        private val singletonInjectable: SingletonInjectable
+        private val singletonInjectable: Singletonable
 ) {
 
     override fun toString(): String = """${super.toString()}
