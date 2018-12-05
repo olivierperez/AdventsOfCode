@@ -64,3 +64,8 @@ fun main() {
     val o = MainObject(module)
 }
 ```
+
+## Full example
+
+- [Package](example/)
+- [fun main()](example/main.kt)
