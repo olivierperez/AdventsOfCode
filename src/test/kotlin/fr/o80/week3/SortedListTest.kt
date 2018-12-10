@@ -1,6 +1,7 @@
 package fr.o80.week3
 
 import org.junit.Assert.*
+import org.junit.Ignore
 import org.junit.Test
 import kotlin.random.Random
 
@@ -79,8 +80,9 @@ class SortedListTest {
     }
 
     @Test
+    @Ignore
     fun `Contains should do around log2(size) checks`() {
-        var numbers = (1..100000).map { Random.nextInt(10_000_000) }
+        val numbers = (1..100_000).map { Random.nextInt(10_000_000) }
 
         var comparatorCounter = 0
         val comparator = Comparator<Int> { t1, t2 ->
@@ -101,9 +103,9 @@ class SortedListTest {
 
     @Test
     fun `Sorting is correct`() {
-        var numbers = (1..1000).map { Random.nextInt(10_000_000) }
+        val numbers = (1..1000).map { Random.nextInt(10_000_000) }
         val tree = sortedMutableListOf<Int>().apply {
-            for(num in numbers) add(num)
+            for (num in numbers) add(num)
         }
 
         assertCollectionEquals(tree, numbers.sorted())

@@ -50,16 +50,30 @@ class SortedList<T>(elements: Array<out T>, private val comparator: Comparator<T
     }
 
     override fun remove(element: T) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        var min = 0
+        var max = size - 1
+
+        while (min < max) {
+            val position = min + ((max - min) / 2)
+            val middleElement = inner[position]
+
+            val comparison = comparator.compare(element, middleElement)
+            when {
+                comparison == 0 -> {
+                    inner.remove(element)
+                    return
+                }
+                comparison < 0 -> max = position - 1
+                else -> min = position + 1
+            }
+        }
     }
 
-    override fun get(index: Int): T {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun get(index: Int): T =
+            inner[index]
 
-    override fun contains(element: T): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun contains(element: T): Boolean =
+            inner.contains(element)
 
     override fun iterator(): Iterator<T> =
             inner.iterator()
