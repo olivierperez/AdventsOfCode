@@ -65,7 +65,7 @@ fun exercise_4_1(): Int {
                 }
             }
 
-    val (hour, time) = sleepindMinutes.maxBy { (k, v) -> v }!!
+    val (hour, _) = sleepindMinutes.maxBy { (_, v) -> v }!!
 //    println("Sleeping: $hour => ${time}h")
     return maxSleepingGuard.toInt() * hour
 }
