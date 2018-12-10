@@ -2,9 +2,9 @@ package fr.o80.week3
 
 import java.util.*
 
-data class SortedList<T>(val elements: Array<out T>, private val comparator: Comparator<T>) : SortedMutableList<T> {
+class SortedList<T>(elements: Array<out T>, private val comparator: Comparator<T>) : SortedMutableList<T> {
 
-    val inner = LinkedList<T>()
+    private val inner = LinkedList<T>()
 
     init {
         elements.forEach { add(it) }
@@ -18,11 +18,10 @@ data class SortedList<T>(val elements: Array<out T>, private val comparator: Com
             inner.add(element)
         } else {
             var min = 0
-            var max = size
-            var position: Int
+            var max = size - 1
 
-            do {
-                position = min + ((max - min) / 2)
+            while (min < max) {
+                val position = min + ((max - min) / 2)
                 val middleElement = inner[position]
 
                 val comparison = comparator.compare(element, middleElement)
@@ -31,10 +30,10 @@ data class SortedList<T>(val elements: Array<out T>, private val comparator: Com
                         inner.add(position, element)
                         return
                     }
-                    comparison < 0 -> min = position + 1
-                    else -> max = position - 1
+                    comparison < 0 -> max = position - 1
+                    else -> min = position + 1
                 }
-            } while (min < max)
+            }
 
             if (min >= inner.size) {
                 inner.add(element)
@@ -42,9 +41,9 @@ data class SortedList<T>(val elements: Array<out T>, private val comparator: Com
                 val lastCompared = inner[min]
                 val comparison = comparator.compare(element, lastCompared)
                 if (comparison >= 0) {
-                    inner.add(position + 1, element)
+                    inner.add(min + 1, element)
                 } else {
-                    inner.add(position, element)
+                    inner.add(min, element)
                 }
             }
         }
