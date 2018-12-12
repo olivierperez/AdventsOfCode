@@ -11,7 +11,7 @@ fun main() {
 
 fun exercise_12_1(generation: Long): Int {
     lateinit var initial: String
-    val generators = day12demo
+    val generators: Set<String> = day12demo
             .split('\n')
             .mapIndexed { index, line ->
                 when (index) {
@@ -22,17 +22,17 @@ fun exercise_12_1(generation: Long): Int {
                     1 -> null
                     else -> {
                         val find = Regex("(.+) => (.)").find(line)!!
-                        Generator(find.groupValues[1], find.groupValues[2][0])
+                        if (find.groupValues[2][0] == '#') find.groupValues[1] else null
                     }
                 }
             }
             .filterNotNull()
-            .toList()
+            .toSet()
 
     return (1..generation)
             .fold(Plants(initial)) { previous, i ->
                 if (i % 1_000_000 == 0L) {
-                    println("$i => ${i.toFloat() / generation}%")
+                    println("$i => ${i.toFloat() * 100 / generation}%")
                 }
                 previous.step(generators)
             }.sumAllPlantNumber()
@@ -57,16 +57,15 @@ class Plants(initial: String, private val minLeft: Int = 0) {
                 .sum()
     }
 
-    fun step(generators: List<Generator>): Plants {
+    fun step(generators: Set<String>): Plants {
         val next = StringBuilder()
         for (c in 0 until plants.length) {
             val neighborhood = plants
                     .substring(max(0, c - 2), min(plants.length, c + 3))
-            val generator = generators.firstOrNull { g -> g.input == neighborhood }
-            if (generator != null) {
-                next.append(generator.output)
+            if (generators.contains(neighborhood)) {
+                next.append('#')
             } else {
-                next.append(".")
+                next.append('.')
             }
         }
 
