@@ -6,12 +6,12 @@ import kotlin.system.measureTimeMillis
 
 fun main() {
     measureTimeMillis { println("12.1 => ${exercise_12_1(20)}") }.also { println("Time: ${it}ms") }
-    measureTimeMillis { println("12.1 => ${exercise_12_1(50_000_000_000)}") }.also { println("Time: ${it}ms") }
+    measureTimeMillis { println("12.2 => ${exercise_12_1(50_000_000_000)}") }.also { println("Time: ${it}ms") }
 }
 
-fun exercise_12_1(generation: Long): Int {
+fun exercise_12_1(generation: Long): Long {
     lateinit var initial: String
-    val generators: Set<String> = day12demo
+    val generators: Set<String> = day12input
             .split('\n')
             .mapIndexed { index, line ->
                 when (index) {
@@ -29,22 +29,34 @@ fun exercise_12_1(generation: Long): Int {
             .filterNotNull()
             .toSet()
 
-    return (1..generation)
-            .fold(Plants(initial)) { previous, i ->
-                if (i % 1_000_000 == 0L) {
-                    println("$i => ${i.toFloat() * 100 / generation}%")
-                }
-                previous.step(generators)
-            }.sumAllPlantNumber()
+    val store = mutableMapOf<String, Plants>()
+    var last = Plants(initial, 0)
+
+    for (i in 1..generation) {
+        if (i % 100_000_000 == 0L) {
+            println("$i => ${i.toFloat() * 100 / generation}%")
+        }
+
+        if (store.containsKey(last.initial)) {
+            val stored = store[last.initial]!!
+            val newGeneration = Plants(stored.initial, i, stored.minLeft + 1) // Hack that works for me :-)
+            store[last.initial] = newGeneration
+            last = newGeneration
+        } else {
+            val newGeneration = last.step(generators)
+            store[last.initial] = newGeneration
+            last = newGeneration
+        }
+    }
+
+    return last.sumAllPlantNumber()
 }
 
-class Generator(val input: String, val output: Char)
-
-class Plants(initial: String, private val minLeft: Int = 0) {
+class Plants(val initial: String, val step: Long, val minLeft: Long = 0) {
 
     private val plants = "....$initial...."
 
-    fun sumAllPlantNumber(): Int {
+    fun sumAllPlantNumber(): Long {
         return plants
                 .mapIndexed { index, c ->
                     if (c == '#') {
@@ -53,7 +65,7 @@ class Plants(initial: String, private val minLeft: Int = 0) {
                         0
                     }
                 }
-                .filter { it != 0 }
+                .filter { it != 0L }
                 .sum()
     }
 
@@ -71,6 +83,7 @@ class Plants(initial: String, private val minLeft: Int = 0) {
 
         return Plants(
                 next.trim('.').toString(),
+                step + 1,
                 minLeft + next.indexOf('#') - 4
         )
     }
