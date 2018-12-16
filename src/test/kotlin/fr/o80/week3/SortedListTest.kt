@@ -1,15 +1,16 @@
 package fr.o80.week3
 
-import org.junit.Assert.*
-import org.junit.Ignore
-import org.junit.Test
+
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import kotlin.random.Random
 
 class SortedListTest {
 
     private fun <T> assertCollectionEquals(c1: Iterable<T>, c2: Iterable<T>) {
         for ((e1, e2) in c1 zip c2) {
-            assertEquals("Collection $c1 is not equal to $c2", e1, e2)
+            assertEquals(e1, e2, "Collection $c1 is not equal to $c2")
         }
     }
 
@@ -80,7 +81,7 @@ class SortedListTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     fun `Contains should do around log2(size) checks`() {
         val numbers = (1..100_000).map { Random.nextInt(10_000_000) }
 

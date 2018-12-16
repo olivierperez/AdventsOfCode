@@ -13,8 +13,8 @@ internal class BoardUnitTest {
         val board = Board(listOf(
                 Goblin(2, 1),
                 Elf(5, 4),
-                Elf(5, 1)
-        ), "")
+                Elf(5, 1),
+                Wall(0, 0)))
 
         // When
         val entities = board.entities()
@@ -34,8 +34,7 @@ internal class BoardUnitTest {
                 Goblin(2, 1),
                 Elf(5, 4),
                 Elf(5, 1),
-                Wall(0, 0)
-        ), "")
+                Wall(0, 0)))
 
         // When
         val elves = board.enemiesOf(Goblin(2, 1))
@@ -50,18 +49,19 @@ internal class BoardUnitTest {
     @DisplayName("Board should load map")
     fun shouldLoadMap() {
         // Given
-        val map = """
-            |###
-            |#.#
-            |###
-        """.trimMargin()
+        val entities = listOf(
+                Goblin(0, 0),
+                Elf(1, 1),
+                Wall(2, 2))
 
         // When
-        val board = Board(listOf(), map)
+        val board = Board(entities)
 
         // Then
-        assertTrue(board.isFree(1, 1), "An empty block should be free")
-        assertFalse(board.isFree(0, 2), "An wall should not be free")
+        assertTrue(board.isFree(5, 4), "An empty block should be free")
+        assertFalse(board.isFree(0, 0), "A goblin should not be free")
+        assertFalse(board.isFree(1, 1), "An elf should not be free")
+        assertFalse(board.isFree(2, 2), "A wall should not be free")
     }
 
     @Test
@@ -77,7 +77,7 @@ internal class BoardUnitTest {
             |#...#.#
             |#######
         """.trimMargin()
-        val board = Board(listOf(), map)
+        val board = Board(MapReader().read(map))
 
         // When
         val next = board.shortestPath(from = Point(1, 3), to = Point(5, 5))
