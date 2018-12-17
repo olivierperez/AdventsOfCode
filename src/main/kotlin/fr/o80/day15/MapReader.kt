@@ -3,12 +3,25 @@ package fr.o80.day15
 /**
  * @author Olivier Perez
  */
-class MapReader {
-    fun read(input: String): List<Entity> {
-        return input.lines()
+class MapReader(private val input: String) {
+
+    var width: Int
+        private set
+    var height: Int
+        private set
+
+    init {
+        val lines = input.lines()
+        width = lines[0].length
+        height = lines.size
+    }
+
+    fun entities(): List<Entity> {
+        return input.lineSequence()
                 .mapIndexed { y, line -> Pair(y, line) }
                 .flatMap { (y, line) ->
-                    line.mapIndexed { x, c -> Pair(Point(x, y), c) }
+                    line.asSequence()
+                            .mapIndexed { x, c -> Pair(Point(x, y), c) }
                 }
                 .mapNotNull { (point, c) ->
                     when (c) {
@@ -18,5 +31,6 @@ class MapReader {
                         else -> null
                     }
                 }
+                .toList()
     }
 }

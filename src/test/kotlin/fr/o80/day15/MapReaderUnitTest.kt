@@ -8,9 +8,10 @@ import org.junit.jupiter.api.Test
  * @author Olivier Perez
  */
 internal class MapReaderUnitTest {
+
     @Test
-    @DisplayName("")
-    fun shouldReadMap() {
+    @DisplayName("Reader should extract entitites")
+    fun shouldReadEntities() {
         // Given
         val map = """
             |####
@@ -18,10 +19,10 @@ internal class MapReaderUnitTest {
             |#  #
             |####
         """.trimMargin()
-        val reader = MapReader()
 
         // When
-        val entities = reader.read(map)
+        val reader = MapReader(map)
+        val entities = reader.entities()
 
         // Then
         assertTrue(entities.contains(Elf(1,1)))
@@ -34,5 +35,26 @@ internal class MapReaderUnitTest {
         assertFalse(entities.contains(Elf(2,2)))
         assertFalse(entities.contains(Goblin(2,2)))
         assertFalse(entities.contains(Wall(2,2)))
+    }
+
+    @Test
+    @DisplayName("Reader should retrieve size")
+    fun shouldReadOutline() {
+        // Given
+        val map = """
+            |####
+            |#EG#
+            |# ##
+            |#  #
+            |## #
+            |####
+        """.trimMargin()
+
+        // When
+        val reader = MapReader(map)
+
+        // Then
+        assertEquals(4, reader.width, "The width should be 4")
+        assertEquals(6, reader.height, "The height should be 6")
     }
 }

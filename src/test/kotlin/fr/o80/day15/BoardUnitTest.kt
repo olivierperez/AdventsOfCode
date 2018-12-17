@@ -77,7 +77,7 @@ internal class BoardUnitTest {
             |#...#.#
             |#######
         """.trimMargin()
-        val board = Board(MapReader().read(map))
+        val board = Board(MapReader(map).entities())
 
         // When
         val next = board.shortestPath(from = Point(1, 3), to = Point(5, 5))
