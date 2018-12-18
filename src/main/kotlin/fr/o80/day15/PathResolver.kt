@@ -1,16 +1,14 @@
 package fr.o80.day15
 
-import java.lang.IllegalStateException
-
 class PathResolver(private val board: Board) {
 
-    fun nextStep(from: Point, to: Point, max: Point): Pair<Point, Int> {
+    fun nextStep(from: Point, to: Point, max: Point): Pair<Point, Int>? {
         lateinit var end: Node
         val nodesList = (Point(0, 0)..max).asSequence()
                 .mapNotNull { p ->
                     when {
                         p == from              -> Node(p.x, p.y, NodeType.START)
-                        p == to                -> Node(p.x, p.y, NodeType.END).also {end = it}
+                        p == to                -> Node(p.x, p.y, NodeType.END).also { end = it }
                         board.isFree(p.x, p.y) -> Node(p.x, p.y, NodeType.EMPTY)
                         else                   -> null
                     }
@@ -32,9 +30,9 @@ class PathResolver(private val board: Board) {
             }
         }
 
-        end.prev?.let { prev ->
-            return Pair(Point(prev.x, prev.y), prev.dist)
-        } ?: throw IllegalStateException("Failed to compute distance to the end")
+        return end.prev?.let { prev ->
+            Pair(Point(prev.x, prev.y), prev.dist)
+        }
     }
 
     private infix fun PathResolver.Node.neighborsIn(nodes: List<Node>): List<Node> {

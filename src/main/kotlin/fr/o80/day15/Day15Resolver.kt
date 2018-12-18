@@ -7,7 +7,7 @@ class Day15Resolver(input: String) {
     private var stepCount = 0
 
     fun resolve(draw: Boolean) {
-        while(keepGoing()) {
+        while (keepGoing()) {
             step()
             if (draw) {
                 draw()
@@ -17,13 +17,13 @@ class Day15Resolver(input: String) {
 
     private fun keepGoing(): Boolean {
         val entities = board.entities()
-        val elves = entities.filter{ it is Elf}
+        val elves = entities.filter { it is Elf }
 
         return entities.size != elves.size && elves.isNotEmpty() && stepCount < 10
     }
 
     private fun step() {
-        stepCount ++
+        stepCount++
         val entities = board.entities()
 
         entities.forEach { entity ->
@@ -45,7 +45,7 @@ class Day15Resolver(input: String) {
 
     private fun move(entity: Entity) {
         val nextStep = board.enemiesOf(entity)
-            .map { enemy -> board.nextStep(entity, enemy) }
+            .mapNotNull { enemy -> board.nextStep(entity, enemy) }
             .minBy { (_, dist) -> dist } // TODO - C'est pas forcément le premier "min" qu'il faut choisir
             ?.first
         if (nextStep != null) {
@@ -57,10 +57,10 @@ class Day15Resolver(input: String) {
         val allEntities = board.entities().map { Point(it.x, it.y) to it }.toMap().toMutableMap()
             .apply { putAll(board.walls) }
 
-        for (x in 0..board.maxPoint.x){
+        for (x in 0..board.maxPoint.x) {
             for (y in 0..board.maxPoint.y) {
                 val entity = allEntities[Point(x, y)]
-                if (entity!= null) {
+                if (entity != null) {
                     print(entity.char())
                 } else {
                     print('.')

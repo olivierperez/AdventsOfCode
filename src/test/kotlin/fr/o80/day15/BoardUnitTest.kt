@@ -93,19 +93,19 @@ internal class BoardUnitTest {
         val firstStep = board.nextStep(
             from = elf,
             to = goblin
-        ).first
+        )!!.first
 
         elf.moveTo(firstStep)
         val secondStep = board.nextStep(
             from = elf,
             to = goblin
-        ).first
+        )!!.first
 
         elf.moveTo(secondStep)
         val thirdStep = board.nextStep(
             from = elf,
             to = goblin
-        ).first
+        )!!.first
 
         // Then
         assertEquals(Point(1, 2), firstStep, "First step should be [1;2]")
