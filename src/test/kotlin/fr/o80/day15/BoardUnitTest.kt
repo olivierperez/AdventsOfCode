@@ -10,22 +10,21 @@ internal class BoardUnitTest {
     @DisplayName("Board should hold entities and give them back")
     fun shouldHoldEntities() {
         // Given
-        val board = Board(
-            listOf(
-                Goblin(2, 1),
-                Elf(5, 4),
-                Elf(5, 1),
-                Wall(0, 0)
-            ),
-            Point(0, 0)
-        )
+        val map = """
+            |######
+            |#.GE.#
+            |#....#
+            |#....#
+            |#####E
+        """.trimMargin()
+        val board = Board(map)
 
         // When
         val entities = board.entities()
 
         // Then
-        assertEquals(5, entities[2].x, "Last entities should be the more down of the three")
-        assertEquals(4, entities[2].y, "Last entities should be the more down of the three")
+        assertEquals(5, entities[2].x, "Last entity should be the more down of the three")
+        assertEquals(4, entities[2].y, "Last entity should be the more down of the three")
         assertEquals(2, entities[0].x, "The first entity should be the one on top-left")
         assertEquals(1, entities[0].y, "The first entity should be the one on top-left")
     }
@@ -34,15 +33,14 @@ internal class BoardUnitTest {
     @DisplayName("Board should give entities for a given type")
     fun shouldProvideEntitiesByType() {
         // Given
-        val board = Board(
-            listOf(
-                Goblin(2, 1),
-                Elf(5, 4),
-                Elf(5, 1),
-                Wall(0, 0)
-            ),
-            Point(0, 0)
-        )
+        val map = """
+            |#....
+            |..GE.
+            |.....
+            |.....
+            |...E.
+        """.trimMargin()
+        val board = Board(map)
 
         // When
         val elves = board.enemiesOf(Goblin(2, 1))
@@ -57,14 +55,14 @@ internal class BoardUnitTest {
     @DisplayName("Board should load map")
     fun shouldLoadMap() {
         // Given
-        val entities = listOf(
-            Goblin(0, 0),
-            Elf(1, 1),
-            Wall(2, 2)
-        )
+        val map = """
+            |G..
+            |.E.
+            |..#
+        """.trimMargin()
 
         // When
-        val board = Board(entities, Point(0, 0))
+        val board = Board(map)
 
         // Then
         assertTrue(board.isFree(5, 4), "An empty block should be free")
@@ -86,9 +84,7 @@ internal class BoardUnitTest {
             |#...#.#
             |#######
         """.trimMargin()
-        val mapReader = MapReader(map)
-        val entities = mapReader.entities()
-        val board = Board(entities, mapReader.maxPoint)
+        val board = Board(map)
 
         // When
         val firstStep = board.nextStep(
@@ -123,9 +119,7 @@ internal class BoardUnitTest {
             |#..G#E#
             |#######
         """.trimMargin()
-        val mapReader = MapReader(map)
-        val entities = mapReader.entities()
-        val board = Board(entities, mapReader.maxPoint)
+        val board = Board(map)
 
         // When
         val firstElf = board.entities()[0]

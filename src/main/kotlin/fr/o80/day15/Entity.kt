@@ -1,6 +1,9 @@
 package fr.o80.day15
 
 sealed class Entity(val x: Int, val y: Int) {
+
+    var life: Int = 200
+
     open infix fun isEnemyOf(other: Entity): Boolean = false
 
     override fun equals(other: Any?): Boolean {

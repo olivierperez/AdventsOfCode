@@ -1,13 +1,23 @@
 package fr.o80.day15
 
-class Board(entities: List<Entity>, private val maxPoint: Point) {
+class Board(input: String) {
 
-    private val walls =
-        entities.filter { it is Wall }
+    private val entities: List<Entity>
+    private val walls: Map<Point, Entity>
+    private val players: List<Entity>
+    private val maxPoint: Point
+    private val pathResolver = PathResolver(this)
+
+    init {
+        MapReader(input).let { mapReader ->
+            maxPoint = mapReader.maxPoint
+            entities = mapReader.entities()
+        }
+        players = entities.filter { it !is Wall }
+        walls = entities.filter { it is Wall }
             .map { Point(it.x, it.y) to it }
             .toMap()
-    private val players = entities.filter { it !is Wall }
-    private val pathResolver = PathResolver(this)
+    }
 
     fun entities() = players.sortedWith(Comparator { a, b ->
         when {

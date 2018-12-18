@@ -8,7 +8,8 @@ fun main() {
 }
 
 fun exercise_15_1(): Int {
-    return 0
+    val resolver = Day15Resolver(day15demo)
+    return resolver.steps() * resolver.totalLife()
 }
 
 fun exercise_15_2(): Int {
