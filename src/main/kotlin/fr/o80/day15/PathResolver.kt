@@ -4,7 +4,7 @@ import java.lang.IllegalStateException
 
 class PathResolver(private val board: Board) {
 
-    fun nextStep(from: Point, to: Point, max: Point): Point {
+    fun nextStep(from: Point, to: Point, max: Point): Pair<Point, Int> {
         lateinit var end: Node
         val nodesList = (Point(0, 0)..max).asSequence()
                 .mapNotNull { p ->
@@ -33,7 +33,7 @@ class PathResolver(private val board: Board) {
         }
 
         end.prev?.let { prev ->
-            return Point(prev.x, prev.y)
+            return Pair(Point(prev.x, prev.y), prev.dist)
         } ?: throw IllegalStateException("Failed to compute distance to the end")
     }
 
@@ -72,7 +72,7 @@ class PointIterator(
             current = if (current.x < endInclusive.x) {
                 Point(current.x + 1, current.y)
             } else {
-                Point(1, current.y + 1)
+                Point(0, current.y + 1)
             }
         }
     }

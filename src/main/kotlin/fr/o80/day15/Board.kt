@@ -2,10 +2,10 @@ package fr.o80.day15
 
 class Board(input: String) {
 
+    val maxPoint: Point
+    val walls: Map<Point, Entity>
     private val entities: List<Entity>
-    private val walls: Map<Point, Entity>
     private val players: List<Entity>
-    private val maxPoint: Point
     private val pathResolver = PathResolver(this)
 
     init {
@@ -41,8 +41,8 @@ class Board(input: String) {
     fun isFree(x: Int, y: Int): Boolean =
         !walls.containsKey(Point(x, y)) && players.none { it.x == x && it.y == y }
 
-    fun nextStep(from: Point, to: Point): Point {
-        return pathResolver.nextStep(from = to, to = from, max = maxPoint)
+    fun nextStep(from: Entity, to: Entity): Pair<Point, Int> {
+        return pathResolver.nextStep(from = to.point(), to = from.point(), max = maxPoint)
     }
 }
 

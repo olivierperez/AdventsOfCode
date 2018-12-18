@@ -10,7 +10,7 @@ class MapReader(private val input: String) {
 
     init {
         val lines = input.lines()
-        maxPoint = Point(lines[0].length, lines.size)
+        maxPoint = Point(lines[0].length -1, lines.size -1)
     }
 
     fun entities(): List<Entity> {
