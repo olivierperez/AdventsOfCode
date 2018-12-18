@@ -10,11 +10,14 @@ internal class BoardUnitTest {
     @DisplayName("Board should hold entities and give them back")
     fun shouldHoldEntities() {
         // Given
-        val board = Board(listOf(
-                Goblin(2, 1),
-                Elf(5, 4),
-                Elf(5, 1),
-                Wall(0, 0)))
+        val board = Board(
+                listOf(
+                        Goblin(2, 1),
+                        Elf(5, 4),
+                        Elf(5, 1),
+                        Wall(0, 0)
+                ),
+                Point(0, 0))
 
         // When
         val entities = board.entities()
@@ -30,11 +33,14 @@ internal class BoardUnitTest {
     @DisplayName("Board should give entities for a given type")
     fun shouldProvideEntitiesByType() {
         // Given
-        val board = Board(listOf(
-                Goblin(2, 1),
-                Elf(5, 4),
-                Elf(5, 1),
-                Wall(0, 0)))
+        val board = Board(
+                listOf(
+                        Goblin(2, 1),
+                        Elf(5, 4),
+                        Elf(5, 1),
+                        Wall(0, 0)
+                ),
+                Point(0, 0))
 
         // When
         val elves = board.enemiesOf(Goblin(2, 1))
@@ -55,7 +61,7 @@ internal class BoardUnitTest {
                 Wall(2, 2))
 
         // When
-        val board = Board(entities)
+        val board = Board(entities, Point(0, 0))
 
         // Then
         assertTrue(board.isFree(5, 4), "An empty block should be free")
@@ -77,13 +83,24 @@ internal class BoardUnitTest {
             |#...#.#
             |#######
         """.trimMargin()
-        val board = Board(MapReader(map).entities())
+        val mapReader = MapReader(map)
+        val entities = mapReader.entities()
+        val board = Board(entities, mapReader.maxPoint)
 
         // When
-        val next = board.shortestPath(from = Point(1, 3), to = Point(5, 5))
+        val firstStep = board.nextStep(
+                from = Point(1, 3),
+                to = Point(5, 5))
+        val secondStep = board.nextStep(
+                from = firstStep,
+                to = Point(5, 5))
+        val thirdStep = board.nextStep(
+                from = secondStep,
+                to = Point(5, 5))
 
         // Then
-        assertEquals(1, next.x, "Next point will be on top of 'from'")
-        assertEquals(2, next.y, "Next point will be on top of 'from'")
+        assertEquals(Point(1, 2), firstStep, "First step should be [1;2]")
+        assertEquals(Point(2, 2), secondStep, "Second step should be [2;2]")
+        assertEquals(Point(3, 2), thirdStep, "Third step should be [3;2]")
     }
 }

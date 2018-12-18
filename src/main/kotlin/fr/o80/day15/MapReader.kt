@@ -5,15 +5,12 @@ package fr.o80.day15
  */
 class MapReader(private val input: String) {
 
-    var width: Int
-        private set
-    var height: Int
+    var maxPoint: Point
         private set
 
     init {
         val lines = input.lines()
-        width = lines[0].length
-        height = lines.size
+        maxPoint = Point(lines[0].length, lines.size)
     }
 
     fun entities(): List<Entity> {

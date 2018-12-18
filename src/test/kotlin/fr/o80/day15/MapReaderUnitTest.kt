@@ -54,7 +54,6 @@ internal class MapReaderUnitTest {
         val reader = MapReader(map)
 
         // Then
-        assertEquals(4, reader.width, "The width should be 4")
-        assertEquals(6, reader.height, "The height should be 6")
+        assertEquals(Point(4,6), reader.maxPoint, "The max point should be [4;6]")
     }
 }
