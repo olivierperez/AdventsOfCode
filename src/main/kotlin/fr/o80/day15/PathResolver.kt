@@ -2,7 +2,7 @@ package fr.o80.day15
 
 class PathResolver(private val board: Board) {
 
-    fun nextStep(from: Point, to: Point, max: Point): Pair<Point, Int>? {
+    fun nextStep(from: Point, to: Point, max: Point): List<Node> {
         lateinit var end: Node
         val nodesList = (Point(0, 0)..max).asSequence()
                 .mapNotNull { p ->
@@ -15,7 +15,7 @@ class PathResolver(private val board: Board) {
                 }
                 .toMutableList()
 
-        val nodes = mutableListOf<Node>().apply { addAll(nodesList) }
+        val nodes = mutableListOf<Node>().apply { addAll(nodesList) } // TODO nodesList.toList()
 
         while (nodesList.isNotEmpty()) {
             val current = nodesList.minBy { node -> node.dist }!!
@@ -30,16 +30,11 @@ class PathResolver(private val board: Board) {
             }
         }
 
-        return end.prev?.let { prev ->
-            Pair(Point(prev.x, prev.y), prev.dist)
-        }
+        return nodes.filter { node -> node.isNeighborOf(end) && node.dist >= 0 }
     }
 
     private infix fun PathResolver.Node.neighborsIn(nodes: List<Node>): List<Node> {
-        return nodes.filter { n ->
-            (n.y == y && (n.x - x == 1 || n.x - x == -1))
-            || (n.x == x && (n.y - y == 1 || n.y - y == -1))
-        }
+        return nodes.filter(this::isNeighborOf)
     }
 
     class Node(
@@ -52,6 +47,10 @@ class PathResolver(private val board: Board) {
 
         fun dist(other: Node): Int =
             if (x == other.x || y == other.y) 1 else Int.MAX_VALUE
+
+        fun isNeighborOf(node: Node): Boolean =
+            (node.y == y && (node.x - x == 1 || node.x - x == -1))
+            || (node.x == x && (node.y - y == 1 || node.y - y == -1))
     }
 
     enum class NodeType { START, EMPTY, END }

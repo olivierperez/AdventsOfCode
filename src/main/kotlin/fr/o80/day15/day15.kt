@@ -8,9 +8,11 @@ fun main() {
 }
 
 fun exercise_15_1(): Int {
-    val resolver = Day15Resolver(day15demo)
+    val resolver = Day15Resolver(day15demo,
+            drawSteps = true,
+            debugMoves = false)
     resolver.draw()
-    resolver.resolve(draw = true)
+    resolver.resolve()
     return resolver.steps() * resolver.totalLife()
 }
 

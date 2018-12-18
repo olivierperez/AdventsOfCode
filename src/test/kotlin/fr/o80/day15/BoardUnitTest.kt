@@ -90,27 +90,54 @@ internal class BoardUnitTest {
         val goblin = entities[1]
 
         // When
-        val firstStep = board.nextStep(
-            from = elf,
-            to = goblin
-        )!!.first
+        val firstStep = board.nextPossibleSteps(
+                from = elf,
+                to = goblin
+        )
 
-        elf.moveTo(firstStep)
-        val secondStep = board.nextStep(
-            from = elf,
-            to = goblin
-        )!!.first
+        elf.moveTo(firstStep[0].first)
+        val secondStep = board.nextPossibleSteps(
+                from = elf,
+                to = goblin
+        )
 
-        elf.moveTo(secondStep)
-        val thirdStep = board.nextStep(
-            from = elf,
-            to = goblin
-        )!!.first
+        elf.moveTo(secondStep[0].first)
+        val thirdStep = board.nextPossibleSteps(
+                from = elf,
+                to = goblin
+        )
 
         // Then
-        assertEquals(Point(1, 2), firstStep, "First step should be [1;2]")
-        assertEquals(Point(2, 2), secondStep, "Second step should be [2;2]")
-        assertEquals(Point(3, 2), thirdStep, "Third step should be [3;2]")
+        assertEquals(Point(1, 2), firstStep[0].first, "First step should be [1;2]")
+        assertEquals(Point(2, 2), secondStep[0].first, "Second step should be [2;2]")
+        assertEquals(Point(3, 2), thirdStep[0].first, "Third step should be [3;2]")
+    }
+
+    @Test
+    @DisplayName("Board find shortest path when 2 are equals")
+    fun shouldFindComplexShortestPath() {
+        // Given
+        val map = """
+            |#######
+            |#G....#
+            |#.....#
+            |#..E..#
+            |#.....#
+            |#.....#
+            |#######
+        """.trimMargin()
+        val board = Board(map)
+        val entities = board.entities()
+        val goblin = entities[0]
+        val elf = entities[1]
+
+        // When
+        val possibleNextSteps = board.nextPossibleSteps(elf, goblin).sortedBy { node -> node.second }
+
+        // Then
+        assertEquals(4, possibleNextSteps.size, "The elf has 4 choices")
+        assertEquals(Point(3, 2), possibleNextSteps[0].first, "After sorting, first possible step should be [3;2]")
+        assertEquals(Point(2, 3), possibleNextSteps[1].first, "After sorting, second possible step should be [2;3]")
     }
 
     @Test
