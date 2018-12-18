@@ -11,13 +11,14 @@ internal class BoardUnitTest {
     fun shouldHoldEntities() {
         // Given
         val board = Board(
-                listOf(
-                        Goblin(2, 1),
-                        Elf(5, 4),
-                        Elf(5, 1),
-                        Wall(0, 0)
-                ),
-                Point(0, 0))
+            listOf(
+                Goblin(2, 1),
+                Elf(5, 4),
+                Elf(5, 1),
+                Wall(0, 0)
+            ),
+            Point(0, 0)
+        )
 
         // When
         val entities = board.entities()
@@ -34,13 +35,14 @@ internal class BoardUnitTest {
     fun shouldProvideEntitiesByType() {
         // Given
         val board = Board(
-                listOf(
-                        Goblin(2, 1),
-                        Elf(5, 4),
-                        Elf(5, 1),
-                        Wall(0, 0)
-                ),
-                Point(0, 0))
+            listOf(
+                Goblin(2, 1),
+                Elf(5, 4),
+                Elf(5, 1),
+                Wall(0, 0)
+            ),
+            Point(0, 0)
+        )
 
         // When
         val elves = board.enemiesOf(Goblin(2, 1))
@@ -56,9 +58,10 @@ internal class BoardUnitTest {
     fun shouldLoadMap() {
         // Given
         val entities = listOf(
-                Goblin(0, 0),
-                Elf(1, 1),
-                Wall(2, 2))
+            Goblin(0, 0),
+            Elf(1, 1),
+            Wall(2, 2)
+        )
 
         // When
         val board = Board(entities, Point(0, 0))
@@ -89,18 +92,62 @@ internal class BoardUnitTest {
 
         // When
         val firstStep = board.nextStep(
-                from = Point(1, 3),
-                to = Point(5, 5))
+            from = Point(1, 3),
+            to = Point(5, 5)
+        )
         val secondStep = board.nextStep(
-                from = firstStep,
-                to = Point(5, 5))
+            from = firstStep,
+            to = Point(5, 5)
+        )
         val thirdStep = board.nextStep(
-                from = secondStep,
-                to = Point(5, 5))
+            from = secondStep,
+            to = Point(5, 5)
+        )
 
         // Then
         assertEquals(Point(1, 2), firstStep, "First step should be [1;2]")
         assertEquals(Point(2, 2), secondStep, "Second step should be [2;2]")
         assertEquals(Point(3, 2), thirdStep, "Third step should be [3;2]")
+    }
+
+    @Test
+    @DisplayName("Check if entity is side by side with an enemy")
+    fun shouldCheckIfEntityIsFighting() {
+        // Given
+        val map = """
+            |#######
+            |#EG...#
+            |#..EE.#
+            |#.#.#.#
+            |#...#.#
+            |#..G#E#
+            |#######
+        """.trimMargin()
+        val mapReader = MapReader(map)
+        val entities = mapReader.entities()
+        val board = Board(entities, mapReader.maxPoint)
+
+        // When
+        val firstElf = board.entities()[0]
+        val firstElfNeighbors = board.neightborEnemies(firstElf)
+        val firstElfIsFighting = firstElfNeighbors.isNotEmpty()
+
+        val secondElf = board.entities()[2]
+        val secondElfNeighbors = board.neightborEnemies(secondElf)
+        val secondElfIsFighting = secondElfNeighbors.isNotEmpty()
+
+        val fourthElf = board.entities()[5]
+        val fourthElfNeighbors = board.neightborEnemies(fourthElf)
+        val fourthElfIsFighting = fourthElfNeighbors.isNotEmpty()
+
+        // Then
+        assertTrue(firstElf is Elf, "First elf is and Elf")
+        assertTrue(firstElfIsFighting, "First elf is fighting")
+
+        assertTrue(secondElf is Elf, "Second elf is and Elf")
+        assertFalse(secondElfIsFighting, "Second elf is NOT fighting")
+
+        assertTrue(fourthElf is Elf, "Fourth elf is and Elf")
+        assertFalse(fourthElfIsFighting, "Fourth elf is NOT fighting")
     }
 }
