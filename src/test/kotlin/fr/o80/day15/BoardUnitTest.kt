@@ -79,26 +79,33 @@ internal class BoardUnitTest {
             |#######
             |#.....#
             |#.....#
-            |#.#.#.#
+            |#E#.#.#
             |#...#.#
-            |#...#.#
+            |#...#G#
             |#######
         """.trimMargin()
         val board = Board(map)
+        val entities = board.entities()
+        val elf = entities[0]
+        val goblin = entities[1]
 
         // When
         val firstStep = board.nextStep(
-            from = Point(1, 3),
-            to = Point(5, 5)
-        )
+            from = elf,
+            to = goblin
+        ).first
+
+        elf.moveTo(firstStep)
         val secondStep = board.nextStep(
-            from = firstStep,
-            to = Point(5, 5)
-        )
+            from = elf,
+            to = goblin
+        ).first
+
+        elf.moveTo(secondStep)
         val thirdStep = board.nextStep(
-            from = secondStep,
-            to = Point(5, 5)
-        )
+            from = elf,
+            to = goblin
+        ).first
 
         // Then
         assertEquals(Point(1, 2), firstStep, "First step should be [1;2]")

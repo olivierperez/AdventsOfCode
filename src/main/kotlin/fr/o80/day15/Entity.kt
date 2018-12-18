@@ -24,6 +24,11 @@ sealed class Entity(var x: Int, var y: Int) {
 
     fun point(): Point = Point(x, y)
     open fun char(): Char = '?'
+
+    fun moveTo(point: Point) {
+        x = point.x
+        y = point.y
+    }
 }
 
 class Elf(x: Int, y: Int) : Entity(x, y) {

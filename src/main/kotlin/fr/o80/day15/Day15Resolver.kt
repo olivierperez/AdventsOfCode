@@ -4,23 +4,26 @@ class Day15Resolver(input: String) {
 
     private val board = Board(input)
 
+    private var stepCount = 0
+
     fun resolve(draw: Boolean) {
-        // TODO Loop until one of the teams is totally dead.
-
-        step()
-
-        if (draw) {
-            draw()
-        }
-
-        step()
-
-        if (draw) {
-            draw()
+        while(keepGoing()) {
+            step()
+            if (draw) {
+                draw()
+            }
         }
     }
 
+    private fun keepGoing(): Boolean {
+        val entities = board.entities()
+        val elves = entities.filter{ it is Elf}
+
+        return entities.size != elves.size && elves.isNotEmpty() && stepCount < 10
+    }
+
     private fun step() {
+        stepCount ++
         val entities = board.entities()
 
         entities.forEach { entity ->
@@ -46,8 +49,7 @@ class Day15Resolver(input: String) {
             .minBy { (_, dist) -> dist } // TODO - C'est pas forcément le premier "min" qu'il faut choisir
             ?.first
         if (nextStep != null) {
-            entity.x = nextStep.x
-            entity.y = nextStep.y
+            entity.moveTo(nextStep)
         }
     }
 
@@ -55,17 +57,16 @@ class Day15Resolver(input: String) {
         val allEntities = board.entities().map { Point(it.x, it.y) to it }.toMap().toMutableMap()
             .apply { putAll(board.walls) }
 
-        for (p in Point(0,0) .. board.maxPoint){
-            val entity = allEntities[p]
-            if (entity!= null) {
-                print(entity.char())
-            } else {
-                print('.')
+        for (x in 0..board.maxPoint.x){
+            for (y in 0..board.maxPoint.y) {
+                val entity = allEntities[Point(x, y)]
+                if (entity!= null) {
+                    print(entity.char())
+                } else {
+                    print('.')
+                }
             }
-
-            if (p.x == board.maxPoint.x) {
-                println()
-            }
+            println()
         }
         println()
     }
