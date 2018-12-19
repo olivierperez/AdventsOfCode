@@ -10,10 +10,11 @@ fun main() {
 fun exercise_15_1(): Int {
     val resolver = Day15Resolver(day15demo,
             drawSteps = true,
-            debugMoves = false)
+            debugMoves = false,
+            showLife = true)
     resolver.draw()
     resolver.resolve()
-    return resolver.steps() * resolver.totalLife()
+    return resolver.stepCount * resolver.totalLife()
 }
 
 fun exercise_15_2(): Int {

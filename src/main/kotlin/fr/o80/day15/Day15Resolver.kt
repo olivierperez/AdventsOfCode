@@ -1,20 +1,23 @@
 package fr.o80.day15
 
 class Day15Resolver(
-        input: String,
-        private val drawSteps: Boolean = false,
-        private val debugMoves: Boolean = false
+    input: String,
+    private val drawSteps: Boolean = false,
+    private val debugMoves: Boolean = false,
+    private val showLife: Boolean = false
 ) {
 
     private val board = Board(input)
 
-    private var stepCount = 0
+    var stepCount = 0
+    private set
 
     fun resolve() {
         while (keepGoing()) {
+            if (drawSteps || showLife) println("---------------------------")
             step()
-            if (drawSteps)
-                draw()
+            if (drawSteps) draw()
+            if (showLife) showLife()
         }
     }
 
@@ -22,7 +25,7 @@ class Day15Resolver(
         val entities = board.entities()
         val elves = entities.filter { it is Elf }
 
-        return entities.size != elves.size && elves.isNotEmpty() && stepCount < 10
+        return entities.size != elves.size && elves.isNotEmpty()
     }
 
     private fun step() {
@@ -30,37 +33,49 @@ class Day15Resolver(
         val entities = board.entities()
 
         entities.forEach { entity ->
-            val fightingWith = board.neightborEnemies(entity)
+            val nearEnemies = board.neighborEnemies(entity) { it.life }
 
-            if (fightingWith.isNotEmpty()) {
-                fight(entity)
+            if (nearEnemies.isNotEmpty()) {
+                fight(nearEnemies)
             }
 
-            if (fightingWith.isEmpty()) {
+            if (nearEnemies.isEmpty()) {
                 move(entity)
             }
         }
+
+        board.removeDead()
     }
 
-    private fun fight(entity: Entity) {
-        //TODO fight
+    private fun fight(fightingWith: List<Entity>) {
+        val minLife = fightingWith[0].life
+        val targets = fightingWith.filter { it.life == minLife }
+            .sortedWith(Comparator { a, b ->
+                when {
+                    a.y > b.y -> 1
+                    a.y < b.y -> -1
+                    a.x > b.x -> 1
+                    else -> -1
+                }
+            })
+        targets.first().hit()
     }
 
     private fun move(entity: Entity) {
         val nextStep = board.enemiesOf(entity)
-                .flatMap { enemy -> board.nextPossibleSteps(entity, enemy) }
-                .sortedBy { (_, dist) -> dist }
+            .flatMap { enemy -> board.nextPossibleSteps(entity, enemy) }
+            .sortedBy { (_, dist) -> dist }
         if (nextStep.isNotEmpty()) {
             val shortestSteps = nextStep.filter { x -> x.second == nextStep[0].second }
-                    .map { (point, _) -> point }
-                    .sortedWith(Comparator { a, b ->
-                        when {
-                            a.y > b.y -> 1
-                            a.y < b.y -> -1
-                            a.x > b.x -> 1
-                            else      -> -1
-                        }
-                    })
+                .map { (point, _) -> point }
+                .sortedWith(Comparator { a, b ->
+                    when {
+                        a.y > b.y -> 1
+                        a.y < b.y -> -1
+                        a.x > b.x -> 1
+                        else -> -1
+                    }
+                })
             entity.moveTo(shortestSteps[0])
             if (debugMoves)
                 println(entity.javaClass.simpleName + " moved to [${shortestSteps[0].x},${shortestSteps[0].y}]")
@@ -70,10 +85,10 @@ class Day15Resolver(
     fun draw() {
         println("Step $stepCount")
         val allEntities = board.entities()
-                .map { Point(it.x, it.y) to it }
-                .toMap()
-                .toMutableMap()
-                .apply { putAll(board.walls) }
+            .map { Point(it.x, it.y) to it }
+            .toMap()
+            .toMutableMap()
+            .apply { putAll(board.walls) }
 
         for (y in 0..board.maxPoint.y) {
             for (x in 0..board.maxPoint.x) {
@@ -89,7 +104,12 @@ class Day15Resolver(
         println()
     }
 
-    fun steps() = 0
+    fun showLife() {
+        board.entities()
+            .forEach { entity ->
+                println(entity.javaClass.simpleName + ": " + entity.life)
+            }
+    }
 
-    fun totalLife(): Int = 0
+    fun totalLife(): Int = board.totalLife()
 }

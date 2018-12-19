@@ -157,15 +157,15 @@ internal class BoardUnitTest {
 
         // When
         val firstElf = board.entities()[0]
-        val firstElfNeighbors = board.neightborEnemies(firstElf)
+        val firstElfNeighbors = board.neighborEnemies(firstElf)
         val firstElfIsFighting = firstElfNeighbors.isNotEmpty()
 
         val secondElf = board.entities()[2]
-        val secondElfNeighbors = board.neightborEnemies(secondElf)
+        val secondElfNeighbors = board.neighborEnemies(secondElf)
         val secondElfIsFighting = secondElfNeighbors.isNotEmpty()
 
         val fourthElf = board.entities()[5]
-        val fourthElfNeighbors = board.neightborEnemies(fourthElf)
+        val fourthElfNeighbors = board.neighborEnemies(fourthElf)
         val fourthElfIsFighting = fourthElfNeighbors.isNotEmpty()
 
         // Then

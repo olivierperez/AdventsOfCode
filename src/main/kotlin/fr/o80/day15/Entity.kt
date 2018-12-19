@@ -29,6 +29,10 @@ sealed class Entity(var x: Int, var y: Int) {
         x = point.x
         y = point.y
     }
+
+    fun hit() {
+        life -= 3
+    }
 }
 
 class Elf(x: Int, y: Int) : Entity(x, y) {
