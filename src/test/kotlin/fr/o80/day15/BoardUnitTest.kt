@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 internal class BoardUnitTest {
 
     @Test
-    @DisplayName("Board should hold entities and give them back")
+    @DisplayName("Board should hold players and give them back")
     fun shouldHoldEntities() {
         // Given
         val map = """
@@ -20,7 +20,7 @@ internal class BoardUnitTest {
         val board = Board(map)
 
         // When
-        val entities = board.entities()
+        val entities = board.players()
 
         // Then
         assertEquals(5, entities[2].x, "Last entity should be the more down of the three")
@@ -30,7 +30,7 @@ internal class BoardUnitTest {
     }
 
     @Test
-    @DisplayName("Board should give entities for a given type")
+    @DisplayName("Board should give players for a given type")
     fun shouldProvideEntitiesByType() {
         // Given
         val map = """
@@ -85,26 +85,26 @@ internal class BoardUnitTest {
             |#######
         """.trimMargin()
         val board = Board(map)
-        val entities = board.entities()
+        val entities = board.players()
         val elf = entities[0]
         val goblin = entities[1]
 
         // When
         val firstStep = board.nextPossibleSteps(
-                from = elf,
-                to = goblin
+            from = elf,
+            to = goblin
         )
 
         elf.moveTo(firstStep[0].first)
         val secondStep = board.nextPossibleSteps(
-                from = elf,
-                to = goblin
+            from = elf,
+            to = goblin
         )
 
         elf.moveTo(secondStep[0].first)
         val thirdStep = board.nextPossibleSteps(
-                from = elf,
-                to = goblin
+            from = elf,
+            to = goblin
         )
 
         // Then
@@ -127,12 +127,13 @@ internal class BoardUnitTest {
             |#######
         """.trimMargin()
         val board = Board(map)
-        val entities = board.entities()
+        val entities = board.players()
         val goblin = entities[0]
         val elf = entities[1]
 
         // When
-        val possibleNextSteps = board.nextPossibleSteps(elf, goblin).sortedBy { node -> node.second }
+        val possibleNextSteps = board.nextPossibleSteps(elf, goblin)
+            .sortedBy { node -> node.second }
 
         // Then
         assertEquals(4, possibleNextSteps.size, "The elf has 4 choices")
@@ -156,16 +157,16 @@ internal class BoardUnitTest {
         val board = Board(map)
 
         // When
-        val firstElf = board.entities()[0]
-        val firstElfNeighbors = board.neighborEnemies(firstElf)
+        val firstElf = board.players()[0]
+        val firstElfNeighbors = board.neighborEnemies(firstElf) { it.life }
         val firstElfIsFighting = firstElfNeighbors.isNotEmpty()
 
-        val secondElf = board.entities()[2]
-        val secondElfNeighbors = board.neighborEnemies(secondElf)
+        val secondElf = board.players()[2]
+        val secondElfNeighbors = board.neighborEnemies(secondElf) { it.life }
         val secondElfIsFighting = secondElfNeighbors.isNotEmpty()
 
-        val fourthElf = board.entities()[5]
-        val fourthElfNeighbors = board.neighborEnemies(fourthElf)
+        val fourthElf = board.players()[5]
+        val fourthElfNeighbors = board.neighborEnemies(fourthElf) { it.life }
         val fourthElfIsFighting = fourthElfNeighbors.isNotEmpty()
 
         // Then

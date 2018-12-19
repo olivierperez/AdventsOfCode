@@ -19,7 +19,7 @@ class Board(input: String) {
                 .toMap()
     }
 
-    fun entities() = players.sortedWith(Comparator { a, b ->
+    fun players() = players.sortedWith(Comparator { a, b ->
         when {
             a.y < b.y -> -1
             b.y < a.y -> 1

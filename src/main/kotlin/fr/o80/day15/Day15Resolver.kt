@@ -14,15 +14,14 @@ class Day15Resolver(
 
     fun resolve() {
         while (keepGoing()) {
-            if (drawSteps || showLife) println("---------------------------")
+            if (drawSteps) println("---------------------------")
             step()
             if (drawSteps) draw()
-            if (showLife) showLife()
         }
     }
 
     private fun keepGoing(): Boolean {
-        val entities = board.entities()
+        val entities = board.players()
         val elves = entities.filter { it is Elf }
 
         return entities.size != elves.size && elves.isNotEmpty()
@@ -30,19 +29,23 @@ class Day15Resolver(
 
     private fun step() {
         stepCount++
-        val entities = board.entities()
+        val players = board.players()
 
-        entities.forEach { entity ->
-            val nearEnemies = board.neighborEnemies(entity) { it.life }
-
-            if (nearEnemies.isNotEmpty()) {
-                fight(nearEnemies)
-            }
-
-            if (nearEnemies.isEmpty()) {
-                move(entity)
+        players.forEach { entity ->
+            if (entity.life > 0) {
+                val fightingEnemies = board.neighborEnemies(entity) { it.life }
+                if (fightingEnemies.isNotEmpty()) {
+                    fight(fightingEnemies)
+                }
+                val nearEnemies = board.neighborEnemies(entity) { it.life }
+                if (nearEnemies.isEmpty()) {
+                    move(entity)
+                }
             }
         }
+
+        if (debugMoves)
+            println("")
 
         board.removeDead()
     }
@@ -83,8 +86,12 @@ class Day15Resolver(
     }
 
     fun draw() {
+        if (showLife){
+            showLife()
+            println("")
+        }
         println("Step $stepCount")
-        val allEntities = board.entities()
+        val allEntities = board.players()
             .map { Point(it.x, it.y) to it }
             .toMap()
             .toMutableMap()
@@ -105,7 +112,7 @@ class Day15Resolver(
     }
 
     fun showLife() {
-        board.entities()
+        board.players()
             .forEach { entity ->
                 println(entity.javaClass.simpleName + ": " + entity.life)
             }
