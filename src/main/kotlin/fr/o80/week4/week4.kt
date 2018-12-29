@@ -3,37 +3,51 @@ package fr.o80.week4
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
+import java.util.concurrent.Semaphore
 
 object MockTool {
-    var recording = false
+
+    internal var recording = false
+        private set
+
+    internal var verifying = false
         private set
 
     private var value: MockedBody? = null
 
-    internal var verifying = false
-
-    fun record(v: MockedBody) {
-        value = v
-        recording = true
-    }
+    private val lock = Semaphore(1)
 
     fun get(): MockedBody {
         recording = false
         return value.also { value = null } ?: throw IllegalStateException("Nothing is recording")
     }
 
-    fun verify() {
-        verifying = true
+    fun <T : Any> verify(block: () -> T) {
+        lock.runLock {
+            verifying = true
+            block()
+            verifying = false
+        }
     }
 
-    fun verified() {
-        verifying = false
+    fun <T> setBody(block: () -> T, value: MockedBody) {
+        lock.runLock {
+            recording = true
+            this.value = value
+            block()
+            recording = false
+        }
     }
+
+    fun <T> setReturnValue(block: () -> T, value: T) {
+        setBody(block) { value }
+    }
+
 }
 
 typealias MockedBody = () -> Any?
 
-class MockHandler : InvocationHandler {
+class MockedInstance : InvocationHandler {
 
     private val values = mutableMapOf<Method, MockedBody>()
 
@@ -43,10 +57,8 @@ class MockHandler : InvocationHandler {
         when {
             MockTool.verifying -> {
                 if (method !in calls) {
-                    MockTool.verified()
                     throw IllegalStateException("Excepting ${method.declaringClass.name}.${method.name}(...) to be called, but it wasn't!")
                 }
-                MockTool.verified()
                 defaultValueFor(method.returnType)
             }
             MockTool.recording -> {
@@ -75,21 +87,5 @@ class MockHandler : InvocationHandler {
 
 inline fun <reified T> mock(): T {
     val clazz = T::class.java
-
-    return Proxy.newProxyInstance(clazz.classLoader, arrayOf(clazz), MockHandler()) as T
-}
-
-inline fun <T : Any> setReturnValue(block: () -> T, value: T) {
-    MockTool.record { value }
-    block()
-}
-
-inline fun <T : Any> setBody(block: () -> T, noinline value: MockedBody) {
-    MockTool.record(value)
-    block()
-}
-
-inline fun <T : Any> verify(block: () -> T) {
-    MockTool.verify()
-    block()
+    return Proxy.newProxyInstance(clazz.classLoader, arrayOf(clazz), MockedInstance()) as T
 }
