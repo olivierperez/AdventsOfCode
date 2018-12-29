@@ -13,13 +13,14 @@ object MockTool {
     internal var verifying = false
         private set
 
-    private var value: MockedBody? = null
+    private var value: MockedBody<*>? = null
 
     private val lock = Semaphore(1)
 
-    fun get(): MockedBody {
+    fun <T> get(): MockedBody<T> {
         recording = false
-        return value.also { value = null } ?: throw IllegalStateException("Nothing is recording")
+        return value.also { value = null } as MockedBody<T>?
+            ?: throw IllegalStateException("Nothing is recording")
     }
 
     fun <T : Any> verify(block: () -> T) {
@@ -30,7 +31,7 @@ object MockTool {
         }
     }
 
-    fun <T> setBody(block: () -> T, value: MockedBody) {
+    fun <T> setBody(block: () -> T, value: MockedBody<T>) {
         lock.runLock {
             recording = true
             this.value = value
@@ -39,17 +40,31 @@ object MockTool {
         }
     }
 
+    @Deprecated(message = "Use 'justReturn(value) on { mock.call() }'")
     fun <T> setReturnValue(block: () -> T, value: T) {
         setBody(block) { value }
     }
 
+    class Returner<T>(private val value: MockedBody<T>) {
+        infix fun on(function: () -> T) {
+            MockTool.setBody(function, value)
+        }
+    }
+
+    fun <T> justReturn(value: T): Returner<T> {
+        return Returner { value }
+    }
+
+    fun <T> justDo(value: MockedBody<T>): Returner<T> {
+        return Returner(value)
+    }
 }
 
-typealias MockedBody = () -> Any?
+typealias MockedBody<T> = () -> T?
 
 class MockedInstance : InvocationHandler {
 
-    private val values = mutableMapOf<Method, MockedBody>()
+    private val values = mutableMapOf<Method, MockedBody<Any>>()
 
     private val calls = mutableListOf<Method>()
 
@@ -67,7 +82,7 @@ class MockedInstance : InvocationHandler {
             }
             else -> {
                 calls.add(method)
-                values[method]?.let(MockedBody::invoke) ?: defaultValueFor(method.returnType)
+                values[method]?.invoke() ?: defaultValueFor(method.returnType)
             }
         }
 

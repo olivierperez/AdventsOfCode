@@ -1,7 +1,7 @@
 package fr.o80.week4
 
-import fr.o80.week4.MockTool.setBody
-import fr.o80.week4.MockTool.setReturnValue
+import fr.o80.week4.MockTool.justDo
+import fr.o80.week4.MockTool.justReturn
 import fr.o80.week4.MockTool.verify
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
@@ -23,12 +23,12 @@ class Week4UnitTest {
     fun shouldMockValue() {
         // Given
         val mockedValues = mock<Example>()
-        setReturnValue({ mockedValues.getByte() }, Byte.MAX_VALUE)
-        setReturnValue({ mockedValues.getChar() }, Char.MAX_VALUE)
-        setReturnValue({ mockedValues.getInt() }, Int.MAX_VALUE)
-        setReturnValue({ mockedValues.getLong() }, Long.MAX_VALUE)
-        setReturnValue({ mockedValues.getFloat() }, Float.MAX_VALUE)
-        setReturnValue({ mockedValues.getDouble() }, Double.MAX_VALUE)
+        justReturn(Byte.MAX_VALUE) on { mockedValues.getByte() }
+        justReturn(Char.MAX_VALUE) on { mockedValues.getChar() }
+        justReturn(Int.MAX_VALUE) on { mockedValues.getInt() }
+        justReturn(Long.MAX_VALUE) on { mockedValues.getLong() }
+        justReturn(Float.MAX_VALUE) on { mockedValues.getFloat() }
+        justReturn(Double.MAX_VALUE) on { mockedValues.getDouble() }
 
         // When + Then
         assertEquals(Byte.MAX_VALUE, mockedValues.getByte())
@@ -45,7 +45,7 @@ class Week4UnitTest {
         // Given
         var count = 1
         val mockedBodies = mock<Example>()
-        setBody({ mockedBodies.getInt() }, { count++ })
+        justDo { count++ } on { mockedBodies.getInt() }
 
         // When + Then
         assertEquals(1, mockedBodies.getInt())
