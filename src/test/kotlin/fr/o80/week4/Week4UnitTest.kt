@@ -36,4 +36,13 @@ class Week4UnitTest {
         assertEquals(2, mockedBodies.getInt())
         assertEquals(3, mockedBodies.getInt())
     }
+
+    @Test
+    @DisplayName("Mocking allows to check method calls")
+    fun shouldCheckCalls() {
+        val mockedValues = mock<Example>()
+        mockedValues.getInt()
+        verify { mockedValues.getInt() }
+    }
+
 }
