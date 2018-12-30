@@ -23,10 +23,18 @@ object MockTool {
             ?: throw IllegalStateException("Nothing is recording")
     }
 
-    fun <T : Any> verify(block: () -> T) {
+    fun <T : Any> verify(times: Int = 1, block: () -> T) {
         lock.runLock {
             verifying = true
-            block()
+            var effectiveCalls = 0
+            try {
+                repeat(times) {
+                    block()
+                    effectiveCalls++
+                }
+            } catch (e: CallException) {
+                throw CallException(e, times, effectiveCalls)
+            }
             verifying = false
         }
     }
@@ -60,28 +68,38 @@ object MockTool {
     }
 }
 
+internal class CallException(private val className: String, private val methodName: String, times: Int = -1, effectiveCalls: Int = -1) : RuntimeException("Excepting $className.$methodName(...) to be called $times times, but was called only $effectiveCalls times!") {
+    constructor(cause: CallException, excepted: Int, effectiveCalls: Int) : this(cause.className, cause.methodName, excepted, effectiveCalls)
+}
+
 typealias MockedBody<T> = () -> T?
 
 class MockedInstance : InvocationHandler {
 
     private val values = mutableMapOf<Method, MockedBody<Any>>()
 
-    private val calls = mutableListOf<Method>()
+    private val calls = mutableMapOf<Method, Int>()
 
     override fun invoke(mock: Any, method: Method, args: Array<out Any>?): Any? =
         when {
             MockTool.verifying -> {
-                if (method !in calls) {
-                    throw IllegalStateException("Excepting ${method.declaringClass.name}.${method.name}(...) to be called, but it wasn't!")
+                val count = calls[method]
+                when (count) {
+                    null -> throw CallException(method.declaringClass.name, method.name)
+                    0 -> throw CallException(method.declaringClass.name, method.name)
+                    else -> {
+                        calls[method] = count - 1
+                        defaultValueFor(method.returnType)
+                    }
                 }
-                defaultValueFor(method.returnType)
             }
             MockTool.recording -> {
                 values[method] = MockTool.get()
                 defaultValueFor(method.returnType)
             }
             else -> {
-                calls.add(method)
+                val last = calls.getOrDefault(method, 0)
+                calls.put(method, last + 1)
                 values[method]?.invoke() ?: defaultValueFor(method.returnType)
             }
         }

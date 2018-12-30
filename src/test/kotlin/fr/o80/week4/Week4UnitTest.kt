@@ -66,4 +66,18 @@ class Week4UnitTest {
         verify { mockedValues.getInt() }
     }
 
+    @Test
+    @DisplayName("Mocking allows to check multiple method calls")
+    fun shouldCheckMultipleCalls() {
+        // Given
+        val mockedValues = mock<Example>()
+
+        // When
+        mockedValues.getInt()
+        mockedValues.getInt()
+
+        // Then
+        verify(2) { mockedValues.getInt() }
+    }
+
 }
