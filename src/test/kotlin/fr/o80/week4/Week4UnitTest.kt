@@ -14,6 +14,7 @@ interface Example {
     fun getLong(): Long
     fun getFloat(): Float
     fun getDouble(): Double
+    fun doInt(x: Int) : Int
 }
 
 class Week4UnitTest {
@@ -80,4 +81,19 @@ class Week4UnitTest {
         verify(2) { mockedValues.getInt() }
     }
 
+    @Test
+    @DisplayName("Mocking allows to specify parameter values")
+    fun shouldSetParameter() {
+        // Given
+        val mock = mock<Example>()
+        justReturn(0) on { mock.doInt(0) }
+        justReturn(42) on { mock.doInt(1) }
+        justReturn(2) on { mock.doInt(2) }
+
+        // When + Then
+        assertEquals(0, mock.doInt(0))
+        assertEquals(42, mock.doInt(1))
+        assertEquals(2, mock.doInt(2))
+
+    }
 }
