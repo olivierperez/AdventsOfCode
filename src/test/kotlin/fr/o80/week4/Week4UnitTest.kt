@@ -1,7 +1,6 @@
 package fr.o80.week4
 
-import fr.o80.week4.MockTool.justDo
-import fr.o80.week4.MockTool.justReturn
+import fr.o80.week4.MockTool.on
 import fr.o80.week4.MockTool.verify
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
@@ -14,7 +13,8 @@ interface Example {
     fun getLong(): Long
     fun getFloat(): Float
     fun getDouble(): Double
-    fun doInt(x: Int) : Int
+    fun getNullableDouble(): Double?
+    fun doInt(x: Int): Int
 }
 
 class Week4UnitTest {
@@ -24,12 +24,12 @@ class Week4UnitTest {
     fun shouldMockValue() {
         // Given
         val mockedValues = mock<Example>()
-        justReturn(Byte.MAX_VALUE) on { mockedValues.getByte() }
-        justReturn(Char.MAX_VALUE) on { mockedValues.getChar() }
-        justReturn(Int.MAX_VALUE) on { mockedValues.getInt() }
-        justReturn(Long.MAX_VALUE) on { mockedValues.getLong() }
-        justReturn(Float.MAX_VALUE) on { mockedValues.getFloat() }
-        justReturn(Double.MAX_VALUE) on { mockedValues.getDouble() }
+        on { mockedValues.getByte() } justReturn (Byte.MAX_VALUE)
+        on { mockedValues.getChar() } justReturn (Char.MAX_VALUE)
+        on { mockedValues.getInt() } justReturn (Int.MAX_VALUE)
+        on { mockedValues.getLong() } justReturn (Long.MAX_VALUE)
+        on { mockedValues.getFloat() } justReturn (Float.MAX_VALUE)
+        on { mockedValues.getDouble() } justReturn (Double.MAX_VALUE)
 
         // When + Then
         assertEquals(Byte.MAX_VALUE, mockedValues.getByte())
@@ -41,12 +41,23 @@ class Week4UnitTest {
     }
 
     @Test
+    @DisplayName("Mocking allows to set the returned value as null")
+    fun shouldMockNullableValue() {
+        // Given
+        val mockedValues = mock<Example>()
+        on { mockedValues.getNullableDouble() } justReturn (null)
+
+        // When + Then
+        assertEquals(null, mockedValues.getDouble())
+    }
+
+    @Test
     @DisplayName("Mocking allows to replace functions bodies")
     fun shouldMockBody() {
         // Given
         var count = 1
         val mockedBodies = mock<Example>()
-        justDo { count++ } on { mockedBodies.getInt() }
+        on { mockedBodies.getInt() } justDo { count++ }
 
         // When + Then
         assertEquals(1, mockedBodies.getInt())
@@ -86,9 +97,9 @@ class Week4UnitTest {
     fun shouldSetParameter() {
         // Given
         val mock = mock<Example>()
-        justReturn(0) on { mock.doInt(0) }
-        justReturn(42) on { mock.doInt(1) }
-        justReturn(2) on { mock.doInt(2) }
+        on { mock.doInt(0) } justReturn (0)
+        on { mock.doInt(1) } justReturn (42)
+        on { mock.doInt(2) } justReturn (2)
 
         // When + Then
         assertEquals(0, mock.doInt(0))

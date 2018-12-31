@@ -45,17 +45,17 @@ object MockTool {
         }
     }
 
-    class Returner<T>(private val value: MockedBody<T>) {
-        infix fun on(function: () -> T) {
+    class Functioned<T>(private val function: MockedBody<T>) {
+        infix fun justReturn(value: T) {
+            MockTool.setBody(function, { value })
+        }
+
+        infix fun justDo(value: () -> T) {
             MockTool.setBody(function, value)
         }
     }
 
-    fun <T> justReturn(value: T): Returner<T> {
-        return Returner { value }
-    }
-
-    fun <T> justDo(value: MockedBody<T>): Returner<T> {
-        return Returner(value)
+    fun <T> on(body: MockedBody<T>): Functioned<T> {
+        return Functioned(body)
     }
 }

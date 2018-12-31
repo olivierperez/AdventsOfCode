@@ -36,16 +36,21 @@ class MockedInstance : InvocationHandler {
             }
         }
 
-    private fun defaultValueFor(returnType: Class<*>?): Any? = when (returnType) {
-        Byte::class.java -> 0.toByte()
-        Char::class.java -> 0.toChar()
-        Int::class.java -> 0
-        Long::class.java -> 0L
-        Float::class.java -> 0f
-        Double::class.java -> 0f.toDouble()
-        Function::class.java -> {
+    private fun defaultValueFor(returnType: Class<*>): Any? = when {
+        returnType == Byte::class.java -> 0.toByte()
+        returnType == Char::class.java -> 0.toChar()
+        returnType == Int::class.java -> 0
+        returnType == Long::class.java -> 0L
+        returnType == Float::class.java -> 0f
+        returnType == Double::class.java -> 0f.toDouble()
+        returnType.isJavaClass() -> null
+        returnType == Function::class.java -> {
         }
         else -> throw IllegalArgumentException("Return type \"$returnType\" not mockable, because I'm lazy.")
+    }
+
+    private fun Class<*>.isJavaClass(): Boolean {
+        return this.genericSuperclass != null
     }
 
 }
