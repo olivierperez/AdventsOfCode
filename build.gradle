@@ -20,6 +20,10 @@ dependencies {
     testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.2'
 }
 
+test {
+    useJUnitPlatform()
+}
+
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
