@@ -6,8 +6,12 @@ import kotlin.system.measureTimeMillis
 fun main() {
     val time = measureTimeMillis {
         val day3 = Day3()
-        val partOne = day3.goBilly(day3.parseInput(day3Input))
+
+        val partOne = day3.partOne(day3.parseInput(day3Input))
         println("PartOne: $partOne")
+
+        val partTwo = day3.partTwo(day3.parseInput(day3Input))
+        println("PartTwo: $partTwo")
     }
 
     println("${time}ms")
@@ -16,8 +20,7 @@ fun main() {
 
 class Day3 {
 
-    fun goBilly(input: List<List<Move>>): Int {
-
+    fun partOne(input: List<List<Move>>): Int {
         val wire1 = toWire(input[0])
         val wire2 = toWire(input[1])
         println("wire1: $wire1")
@@ -30,11 +33,26 @@ class Day3 {
                 .min() ?: -1
     }
 
+    fun partTwo(input: List<List<Move>>): Int {
+        val wire1 = toWire(input[0])
+        val wire2 = toWire(input[1])
+//        println("wire1: $wire1")
+//        println("wire2: $wire2")
+
+        val intersects = computeIntersects(wire1, wire2)
+        println("intersects: $intersects")
+
+        return intersects
+                .map { wire1.stepsTo(it) + wire2.stepsTo(it) }
+                .min()
+                ?: -1
+    }
+
     private fun computeIntersects(wire1: List<Part>, wire2: List<Part>): List<Point> {
         val intersects = mutableListOf<Point>()
 
-        wire1.forEachIndexed { i1, part1 ->
-            wire2.forEachIndexed { i2, part2 ->
+        wire1.forEach { part1 ->
+            wire2.forEach { part2 ->
                 val intersect: Point? = part1 crossWith part2
                 intersect?.let {
                     intersects += it
@@ -51,7 +69,7 @@ class Day3 {
 
         for (move in moves) {
             val to = move.computeNewPointFrom(from)
-            parts += Part(from, to)
+            parts += Part(from, to, move.distance)
             from = to
         }
 
@@ -69,7 +87,17 @@ class Day3 {
                     .toList()
 }
 
-data class Part(val a: Point, val b: Point) {
+private fun List<Part>.stepsTo(destination: Point): Int {
+    val fullPartDistance = this.takeWhile { part -> destination !in part }
+            .sumBy { it.distance }
+    val remaining = this.first { part -> destination in part }.let { part ->
+        abs(destination.x - part.a.x) + abs(destination.y - part.a.y)
+    }
+
+    return fullPartDistance + remaining
+}
+
+data class Part(val a: Point, val b: Point, val distance: Int = Int.MIN_VALUE) {
     infix fun crossWith(other: Part): Point? {
         if (a.x == b.x) {
             if ((other.a.x < a.x && a.x < other.b.x) || other.a.x > a.x && a.x > other.b.x)
@@ -86,6 +114,12 @@ data class Part(val a: Point, val b: Point) {
         }
 
         return null
+    }
+
+    operator fun contains(point: Point): Boolean {
+        val check1 = a.x == b.x && a.x == point.x && (point.y in a.y..b.y || point.y in b.y..a.y)
+        val check2 = a.y == b.y && a.y == point.y && (point.x in a.x..b.x || point.x in b.x..a.x)
+        return check1 || check2
     }
 }
 

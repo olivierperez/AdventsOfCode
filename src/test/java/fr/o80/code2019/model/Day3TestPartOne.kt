@@ -6,7 +6,7 @@ import fr.o80.code2019.day3.Point
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-internal class Day3Test {
+internal class Day3TestPartOne {
 /*
 ...+...
 ...|...
@@ -50,7 +50,7 @@ internal class Day3Test {
 
         // When
         val parsedInput = day3.parseInput(input)
-        val result = day3.goBilly(parsedInput)
+        val result = day3.partOne(parsedInput)
 
         // Then
         assertEquals(6, result)
@@ -64,7 +64,7 @@ internal class Day3Test {
 
         // When
         val parsedInput = day3.parseInput(input)
-        val result = day3.goBilly(parsedInput)
+        val result = day3.partOne(parsedInput)
 
         // Then
         assertEquals(159, result)
@@ -79,7 +79,7 @@ internal class Day3Test {
 
         // When
         val parsedInput = day3.parseInput(input)
-        val result = day3.goBilly(parsedInput)
+        val result = day3.partOne(parsedInput)
 
         // Then
         assertEquals(135, result)
