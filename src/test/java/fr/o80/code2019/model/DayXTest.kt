@@ -10,8 +10,8 @@ internal class DayXTest {
     inner class PartOne {
         @Test
         fun testBilly() {
-            val dayX = DayX()
-            assertEquals(42, dayX.goBilly(mutableListOf()))
+            val day = DayX()
+            assertEquals(42, day.goBilly(mutableListOf()))
         }
     }
 
@@ -19,8 +19,8 @@ internal class DayXTest {
     inner class PartTwo {
         @Test
         fun testBilly() {
-            val dayX = DayX()
-            assertEquals(42, dayX.goBilly(mutableListOf()))
+            val day = DayX()
+            assertEquals(42, day.goBilly(mutableListOf()))
         }
     }
 
