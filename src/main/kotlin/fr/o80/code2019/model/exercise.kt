@@ -14,11 +14,13 @@ fun main() {
 
 class DayX {
 
-    fun parseInput(s: String): MutableList<Int> =
-        s.split(",")
+    fun parseInput(input: String): MutableList<Int> =
+        input.split(",")
             .map(String::toInt)
             .toMutableList()
 
-    fun goBilly(input: MutableList<Int>): Int = 42
+    fun goBilly(input: MutableList<Int>): Int {
+        return 42
+    }
 
 }
