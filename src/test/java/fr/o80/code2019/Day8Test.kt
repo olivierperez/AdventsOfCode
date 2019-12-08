@@ -26,13 +26,4 @@ internal class Day8Test {
         }
     }
 
-    @Nested
-    inner class PartTwo {
-        @Test
-        fun `example from AOC`() {
-            val day = Day8(0, 0)
-            assertEquals(42, day.partOne(mutableListOf()))
-        }
-    }
-
 }
