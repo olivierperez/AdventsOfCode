@@ -1,14 +1,22 @@
 package fr.o80.code2019.day7
 
-import java.util.Scanner
 import kotlin.system.measureTimeMillis
+
+const val CONTINUE = false
+const val STOP = true
 
 fun main() {
     val time = measureTimeMillis {
         val day = Intcode()
-        val partOne = day.partOne(day7Input)
-        println("partOne: $partOne")
-        val partTwo = day.partTwo("3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5")
+        //val partOne = day.partOne(day7Input)
+        //println("partOne: $partOne")
+
+        // Exemple 1
+        //val partTwo = day.partTwo("3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5")
+        // Exemple 2
+        //val partTwo = day.partTwo("3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10")
+        val partTwo = day.partTwo(day7Input)
+
         println("PartTwo: $partTwo")
     }
 
@@ -16,15 +24,6 @@ fun main() {
 }
 
 class Intcode {
-
-    private val add: Operation = AddOperation()
-    private val mul: Operation = MulOperation()
-    private val read: ReadInputOperation = ReadInputOperation()
-    private val output: OutputOperation = OutputOperation()
-    private val jumpIfTrue: Operation = JumpIfTrue()
-    private val jumpIfFalse: Operation = JumpIfFalse()
-    private val lessThan: Operation = LessThan()
-    private val equalTo: Operation = EqualTo()
 
     fun parseInput(s: String): MutableList<Int> =
         s.split(",")
@@ -43,7 +42,14 @@ class Intcode {
     }
 
     fun partTwo(input: String): Int {
-        return -1
+        return generateAllPhases(5)
+            .map { phases ->
+                amplify(
+                    input = parseInput(input),
+                    phases = phases
+                )
+            }
+            .max()!!
     }
 
     private fun generateAllPhases(bump: Int = 0): List<List<Int>> {
@@ -74,70 +80,40 @@ class Intcode {
     }
 
     private fun amplify(input: MutableList<Int>, phases: List<Int>): Int {
-        var thrust = 0
-        compute(
-            input = input,
-            intProvider = listOf(phases[0], thrust).iterator(),
-            intReader = { thrust = it }
-        )
-        compute(
-            input = input,
-            intProvider = listOf(phases[1], thrust).iterator(),
-            intReader = { thrust = it }
-        )
-        compute(
-            input = input,
-            intProvider = listOf(phases[2], thrust).iterator(),
-            intReader = { thrust = it }
-        )
-        compute(
-            input = input,
-            intProvider = listOf(phases[3], thrust).iterator(),
-            intReader = { thrust = it }
-        )
-        compute(
-            input = input,
-            intProvider = listOf(phases[4], thrust).iterator(),
-            intReader = { thrust = it }
-        )
-        return thrust
-    }
+        var thrust: Output = Thrust(0)
+        val amplifierA = Amplifier(phases[0], input)
+        val amplifierB = Amplifier(phases[1], input)
+        val amplifierC = Amplifier(phases[2], input)
+        val amplifierD = Amplifier(phases[3], input)
+        val amplifierE = Amplifier(phases[4], input)
 
-    private fun compute(input: MutableList<Int>, intProvider: Iterator<Int>, intReader: (Int) -> Unit): Int {
-        read.intProvider = intProvider
-        output.intReader = intReader
-        applyUpdates(input)
-        return input[0]
-    }
+        do {
+            // A
+            thrust = amplifierA.amplify(thrust.thrust)
 
-    private fun applyUpdates(values: MutableList<Int>) {
-        var index = 0
-        while (values[index] != 99) {
-            val mods = values[index] / 100
-            val op = values[index] - mods * 100
-            index += when (op) {
-                1 -> add.update(values, mods, index)
-                2 -> mul.update(values, mods, index)
-                3 -> read.update(values, mods, index)
-                4 -> output.update(values, mods, index)
-                5 -> jumpIfTrue.update(values, mods, index)
-                6 -> jumpIfFalse.update(values, mods, index)
-                7 -> lessThan.update(values, mods, index)
-                8 -> equalTo.update(values, mods, index)
-                else -> throw IllegalArgumentException("Tu te crois où !? Je sais pas gérer de \"$op\"!")
-            }
-        }
+            // B
+            thrust = amplifierB.amplify(thrust.thrust)
+
+            // C
+            thrust = amplifierC.amplify(thrust.thrust)
+
+            // D
+            thrust = amplifierD.amplify(thrust.thrust)
+
+            // E
+            thrust = amplifierE.amplify(thrust.thrust)
+        } while (thrust is Thrust)
+
+        return (thrust as Final).thrust
     }
 
 }
 
-class ScannerIterator : Iterator<Int> {
-    override fun hasNext(): Boolean {
-        return true
-    }
-
-    override fun next(): Int {
-        print("input: ")
-        return Scanner(System.`in`).nextInt()
+sealed class Output(val thrust: Int) {
+    override fun toString(): String {
+        return "${this::class.simpleName}(thrust=$thrust)"
     }
 }
+
+class Thrust(thrust: Int) : Output(thrust)
+class Final(thrust: Int) : Output(thrust)

@@ -13,14 +13,14 @@ internal class DayXTest {
         @Test
         fun `example from AOC`() {
             // Given
-            val input = ""
+            val input = "0,1"
 
             // When
             val day = DayX()
             val goBilly = day.goBilly(day.parseInput(input))
 
             // Then
-            assertEquals(42, goBilly)
+            assertEquals(-1, goBilly)
         }
     }
 
@@ -30,14 +30,14 @@ internal class DayXTest {
         @Test
         fun `example from AOC`() {
             // Given
-            val input = ""
+            val input = "0,1"
 
             // When
             val day = DayX()
             val goBilly = day.goBilly(day.parseInput(input))
 
             // Then
-            assertEquals(42, goBilly)
+            assertEquals(-1, goBilly)
         }
     }
 

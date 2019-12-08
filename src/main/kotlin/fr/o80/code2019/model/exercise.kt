@@ -21,7 +21,7 @@ class DayX {
             .toMutableList()
 
     fun goBilly(input: MutableList<Int>): Int {
-        return 42
+        return -1
     }
 
 }
