@@ -1,17 +1,19 @@
 package fr.o80.code2019
 
 import fr.o80.code2019.day10.Asteroid
+import fr.o80.code2019.day10.Asteroids
 import fr.o80.code2019.day10.Day10
+import fr.o80.code2019.day10.Laser
+import fr.o80.code2019.day10.day10Ex5Input
 import fr.o80.code2019.day10.day10Input
 import fr.o80.code2019.day10.isHiddenBy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.opentest4j.AssertionFailedError
+import kotlin.math.PI
 
 internal class Day10Test {
 
@@ -167,30 +169,10 @@ internal class Day10Test {
         @Test
         fun `Example 05`() {
             // Given
-            val input = """.#..##.###...#######
-##.############..##.
-.#.######.########.#
-.###.#######.####.#.
-#####.##.#.##.###.##
-..#####..#.#########
-####################
-#.####....###.#.#.##
-##.#################
-#####.##.###..####..
-..######..##.#######
-####.##.####...##..#
-.#####..#.######.###
-##...#.##########...
-#.##########.#######
-.####.#.###.###.#.##
-....##.##.###..#####
-.#.#.###########.###
-#.#.#.#####.####.###
-###.##.####.##.#..##""".trimMargin()
 
             // When
             val day = Day10()
-            val max = day.maxVisibleAsteroids(day.parseInput(input))
+            val max = day.maxVisibleAsteroids(day.parseInput(day10Ex5Input))
 
             // Then
             assertEquals(210, max)
@@ -210,20 +192,16 @@ internal class Day10Test {
     }
 
     @Nested
-    @Disabled
     @DisplayName("Day 10 Part 2")
     inner class PartTwo {
         @Test
-        fun `example from AOC`() {
-            // Given
-            val input = "0,1"
+        fun `Check angles`() {
+            val laser = Laser(Asteroid(0, 0), Asteroids(""))
 
-            // When
-            val day = Day10()
-            val goBilly = -2//day.goBilly(day.parseInput(input))
-
-            // Then
-            assertEquals(-1, goBilly)
+            assertEquals(0.0, laser.angleWith(Asteroid(0, -15)), 0.00001) // 0
+            assertEquals(PI / 2, laser.angleWith(Asteroid(15, 0)), 0.00001) // PI / 2
+            assertEquals(PI, laser.angleWith(Asteroid(0, 15)), 0.00001) // PI
+            assertEquals(3 * PI / 2, laser.angleWith(Asteroid(-15, 0)), 0.00001) // 3 PI / 2
         }
     }
 
