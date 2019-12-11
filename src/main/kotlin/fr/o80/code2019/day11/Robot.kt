@@ -1,6 +1,8 @@
 package fr.o80.code2019.day11
 
 import java.math.BigInteger
+import kotlin.math.max
+import kotlin.math.min
 
 typealias Color = Int
 
@@ -23,10 +25,8 @@ class Robot(input: String) {
     private var currentDirection = Direction.UP
 
     private var readingColor: ReadingMod = ReadingMod.COLOR
-
-    init {
-        map[currentPosition] = BLACK
-    }
+    private var topLeft = currentPosition
+    private var bottomRight = currentPosition
 
     fun parseInput(s: String): MutableList<BigInteger> =
         s.split(",")
@@ -36,20 +36,20 @@ class Robot(input: String) {
     private fun provideInt(): Int {
         //Thread.sleep(100L)
         val color = map.getOrDefault(currentPosition, BLACK)
-        println("----")
-        println("Providing color: $color")
+        //println("----")
+        //println("Providing color: $color")
         return color
     }
 
     private fun handleOutput(value: BigInteger) {
         when (readingColor) {
             ReadingMod.COLOR -> {
-                println("color: $value")
+                //println("color: $value")
                 paint(value.toInt())
                 readingColor = ReadingMod.MOVE
             }
             ReadingMod.MOVE -> {
-                println("move: $value")
+                //println("move: $value")
                 move(value.toInt())
                 readingColor = ReadingMod.COLOR
             }
@@ -71,13 +71,33 @@ class Robot(input: String) {
                 currentPosition = currentDirection(currentPosition)
             }
         }
-        println("currentDirection: $currentDirection")
-        println("currentPosition: $currentPosition")
+        //println("currentDirection: $currentDirection")
+        //println("currentPosition: $currentPosition")
+
+        topLeft = Point(min(currentPosition.x, topLeft.x), min(currentPosition.y, topLeft.y))
+        bottomRight = Point(max(currentPosition.x, bottomRight.x), max(currentPosition.y, bottomRight.y))
     }
 
     fun compute(): Int {
+        map[currentPosition] = BLACK
         intcode.compute(parsed)
         return map.size
+    }
+
+    fun draw() {
+        map[currentPosition] = WHITE
+        intcode.compute(parsed)
+
+        for (y in topLeft.y..bottomRight.y) {
+            for (x in topLeft.x..bottomRight.x) {
+                if (map.getOrDefault(Point(x, y), BLACK) == WHITE) {
+                    print("#")
+                } else {
+                    print(" ")
+                }
+            }
+            println("")
+        }
     }
 }
 
@@ -114,5 +134,5 @@ enum class Direction {
 
     abstract fun turnLeft(): Direction
     abstract fun turnRight(): Direction
-    abstract operator fun invoke(currentDirection: Point): Point
+    abstract operator fun invoke(currentPosition: Point): Point
 }

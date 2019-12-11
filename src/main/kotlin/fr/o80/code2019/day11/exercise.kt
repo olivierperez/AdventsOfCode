@@ -7,6 +7,8 @@ fun main() {
         val day = Robot(day11Input)
         val partOne = day.compute()
         println("partOne: $partOne")
+
+        day.draw()
     }
 
     println("${time}ms")
