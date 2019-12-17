@@ -1,14 +1,24 @@
 package fr.o80.code2019.day13
 
+import fr.o80.code2019.day13.Block.BALL
 import fr.o80.code2019.day13.Block.BLOCK
+import fr.o80.code2019.day13.Block.PADDLE
 import fr.o80.code2019.day13.ReadingMod.LEFT
 import fr.o80.code2019.day13.ReadingMod.TILE
 import fr.o80.code2019.day13.ReadingMod.TOP
 import java.math.BigInteger
 
+private const val JOYSTICK_LEFT = -1
+private const val JOYSTICK_RIGHT = 1
+private const val JOYSTICK_CENTER = 0
+
 data class Point(val x: BigInteger, val y: BigInteger)
 
 class Game(input: String) {
+
+    private lateinit var paddle: Point
+    private lateinit var ball: Point
+    private lateinit var score: BigInteger
 
     private val map = mutableMapOf<Point, Block>()
 
@@ -20,13 +30,28 @@ class Game(input: String) {
     private var left: BigInteger = BigInteger.ZERO
     private var top: BigInteger = BigInteger.ZERO
 
+    fun countTileBlock(): Int {
+        intcode.compute(parsed)
+        return map.values.count { it == BLOCK }
+    }
+
+    fun play(): BigInteger {
+        parsed[0] = BigInteger.valueOf(2)
+        intcode.compute(parsed)
+        return score
+    }
+
     fun parseInput(s: String): MutableList<BigInteger> =
         s.split(",")
             .map(String::toBigInteger)
             .toMutableList()
 
     private fun provideInt(): Int {
-        throw IllegalArgumentException("Pourquoi t'as besoin de ça ?")
+        return when {
+            paddle.x > ball.x -> JOYSTICK_LEFT
+            paddle.x < ball.x -> JOYSTICK_RIGHT
+            else -> JOYSTICK_CENTER
+        }
     }
 
     private fun handleOutput(value: BigInteger) {
@@ -41,15 +66,23 @@ class Game(input: String) {
                 readingMod = TILE
             }
             TILE -> {
-                map[Point(left, top)] = Block.from(value.toInt())
+                if (left == BigInteger.valueOf(-1) && top == BigInteger.ZERO) {
+                    score = value
+                } else {
+                    val block = Block.from(value.toInt())
+                    val position = Point(left, top)
+                    map[position] = block
+
+                    if (block == BALL) {
+                        ball = position
+                    } else if (block == PADDLE) {
+                        paddle = position
+                    }
+                }
+
                 readingMod = LEFT
             }
         }
-    }
-
-    fun countTileBlock(): Int {
-        intcode.compute(parsed)
-        return map.values.count { it == BLOCK }
     }
 
 }

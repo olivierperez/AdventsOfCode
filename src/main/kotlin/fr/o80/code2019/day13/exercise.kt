@@ -6,7 +6,10 @@ fun main() {
     val time = measureTimeMillis {
         val day = Game(day13Input)
         val partOne = day.countTileBlock()
-        println("partOne: $partOne")
+        println("Part One: $partOne")
+
+        val partTwo = day.play()
+        println("Part Two: $partTwo")
     }
 
     println("${time}ms")
